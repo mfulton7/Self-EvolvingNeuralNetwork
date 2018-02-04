@@ -135,6 +135,27 @@ public:
 
 };
 
+class Layer 
+{
+public:
+
+	vector<Block*> blocks;
+
+	Layer(int blockCount, int blockSize) 
+	{
+		for (int i = 0; i < blockCount; i++) 
+		{
+			blocks.push_back(new Block(blockSize));
+		}
+	}
+
+	///need to add ad block layer function.
+	void addBlock(int blockSize) 
+	{
+		blocks.push_back(new Block(blockSize));
+	}
+
+};
 
 // map that contains list and orientation of neurons(nodes) in network
 class Network {
@@ -143,9 +164,9 @@ public:
 	//id
 	float branchID;
 
-	//the network is a 3d structure that is represented by vectors for each dimension
 	//this is created after network generation and is used to allow backpropagation
-	vector<Block> blocks;
+	//need to add layer funcitonality here?
+	vector<Layer*> layers;
 
 	//list of references evolved branches from this branch
 	vector<Network*> children;
@@ -162,10 +183,10 @@ public:
 	Network(int blockCount, int blockSize) {
 		branchID = rand() % 100;
 		for (int i = 0; i < blockCount; i++) {
-			blocks.push_back(Block(blockSize));
+			layers.push_back(new Layer(blockCount,blockSize));
 			if (i > 0) {
 				//add connection in between created blocks
-				connections.push_back(Connection(&blocks[i], &blocks[i - 1]));
+				connections.push_back(Connection(layers[i]->blocks.front(), layers[i-1]->blocks.front()));
 			}
 		}
 	};

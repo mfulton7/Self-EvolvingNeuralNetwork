@@ -56,10 +56,10 @@ namespace Unit_Tests
 			int blockSize = 10;
 			int blockCount = 10;
 			Network testNetwork = Network(blockCount, blockSize);
-			Assert::AreEqual(int(testNetwork.blocks.size()), blockCount);
-			for each (Block b in testNetwork.blocks)
+			Assert::AreEqual(int(testNetwork.layers.size()), blockCount);
+			for each (Layer* l in testNetwork.layers)
 			{
-				Assert::AreEqual(int(b.population.size()), blockSize);
+				Assert::AreEqual(int(l->blocks.front()->population.size()), blockSize);
 			}
 
 		}
@@ -93,8 +93,8 @@ namespace Unit_Tests
 		{
 			Network testNetwork = Network(2, 1);
 			//set node potentials
-			testNetwork.blocks[0].population[0]->nodePotential = 5;
-			testNetwork.blocks[1].population[0]->nodePotential = 3;
+			testNetwork.layers[0]->blocks[0]->population[0]->nodePotential = 5;
+			testNetwork.layers[1]->blocks[0]->population[0]->nodePotential = 3;
 			//set starting weights
 			testNetwork.connections[0].strengthOfConnection = 0.5;
 			return testNetwork;
@@ -111,8 +111,8 @@ namespace Unit_Tests
 			//so .5 * 5
 		
 			Assert::IsTrue(suceeded);
-			Assert::AreEqual(int(testNetwork.blocks[1].inputFromConnections.size()), 1);
-			Assert::AreEqual(testNetwork.blocks[1].inputFromConnections[0], float(2.5));
+			Assert::AreEqual(int(testNetwork.layers[1]->blocks[0]->inputFromConnections.size()), 1);
+			Assert::AreEqual(testNetwork.layers[1]->blocks[0]->inputFromConnections[0], float(2.5));
 
 			//combine input and node potential and then cleanup input vector
 
