@@ -91,6 +91,7 @@ public:
 	//function to send forward prop through connection
 	//input * str of connection + same for all other connections on dest block
 	//after doing this the neurons in the destination block must sum up their inputs, squash them, and then freee input vector
+	//need a version of this for inputs and not a previous block????
 	bool feedForward() 
 	{
 	
@@ -124,7 +125,7 @@ public:
 		}
 		//apply summation of inputs to every neuron in block
 		//and trigger activation function
-		for each (Neuron* n in originBlock->population)
+		for each (Neuron* n in destinationBlock->population)
 		{
 			n->nodePotential += sumOfInputs;
 			n->activateSigmoid();
@@ -164,6 +165,10 @@ public:
 	//id
 	float branchID;
 
+	vector<float> inputs;
+
+	vector<float> outputs;
+
 	//this is created after network generation and is used to allow backpropagation
 	//need to add layer funcitonality here?
 	vector<Layer*> layers;
@@ -192,8 +197,16 @@ public:
 	};
 	//////////////////////////////////////
 
-	//function to sum all connections for each neuron in a layer
+	//all steps to go forward from input to output
+	void completeForwardPass() 
+	{
+		//pass input to first layer
+		//feedforward for all connections
+		//add and wipe for all connections
+	
+	};
 
+	//all steps to backpropagate from error to whole network
 
 
 

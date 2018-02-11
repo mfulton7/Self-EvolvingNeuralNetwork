@@ -114,9 +114,21 @@ namespace Unit_Tests
 			Assert::AreEqual(int(testNetwork.layers[1]->blocks[0]->inputFromConnections.size()), 1);
 			Assert::AreEqual(testNetwork.layers[1]->blocks[0]->inputFromConnections[0], float(2.5));
 
-			//combine input and node potential and then cleanup input vector
-
-			//quash funciton after cleaning input
+			//combine input and node potential 
+			//now should be (.5 * 5) +3 = 5.5
+			//quash function 5.5/6.5 = ~.84
+			testNetwork.connections[0].addInputsToNodeAndWipeInputVector();
+			Assert::AreEqual(testNetwork.layers[1]->blocks[0]->population[0]->nodePotential, float(0.846153846));
+			
+			//then cleanup input vector
+			for each (Layer* l in testNetwork.layers)
+			{
+				for each(Block* b in l->blocks) 
+				{
+					Assert::IsTrue(b->inputFromConnections.empty());
+				}
+			}
+			
 
 		
 		}
