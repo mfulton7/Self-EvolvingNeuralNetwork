@@ -151,6 +151,7 @@
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="data_handlers.h" />
     <ClInclude Include="manager.h" />
     <ClInclude Include="neural_net.h" />
   </ItemGroup>

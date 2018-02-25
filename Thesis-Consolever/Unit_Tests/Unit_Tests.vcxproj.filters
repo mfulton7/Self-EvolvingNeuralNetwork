@@ -29,5 +29,8 @@
     <ClCompile Include="Neural_Net_TEST.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Data_Generation_TEST.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

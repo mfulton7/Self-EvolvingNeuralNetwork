@@ -248,6 +248,8 @@ public:
 //blocks are comprised of sets of individual neurons
 //blocks are connected to other blocks via connections
 
+
+
 #endif // !neural_net
 
 
