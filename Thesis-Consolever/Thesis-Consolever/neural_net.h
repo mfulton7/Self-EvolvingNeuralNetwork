@@ -156,24 +156,25 @@ public:
 
 
 //convert to template?
+template <typename T>
 class Layer 
 {
 public:
 
-	vector<Block*> blocks;
+	vector<T*> blocks;
 
 	Layer(int blockCount, int blockSize) 
 	{
 		for (int i = 0; i < blockCount; i++) 
 		{
-			blocks.push_back(new Block(blockSize));
+			blocks.push_back(new T(blockSize));
 		}
 	}
 
 	///need to add ad block layer function.
 	void addBlock(int blockSize) 
 	{
-		blocks.push_back(new Block(blockSize));
+		blocks.push_back(new T(blockSize));
 	}
 
 };
@@ -186,14 +187,14 @@ public:
 	float branchID;
 
 	//inputs to network
-	
+	vector<Layer<IO_Block>*> inputs;
 
 	//outputs to network
-
+	vector<Layer<IO_Block>*> outputs;
 
 
 	//hidden layers of network	
-	vector<Layer*> layers;
+	vector<Layer<Block>*> layers;
 
 	//list of references evolved branches from this branch
 	vector<Network*> children;
@@ -201,15 +202,6 @@ public:
 	//list of connections between blocks
 	vector<Connection> connections;
 
-	void SetInputSize(int size) 
-	{
-		inputSize = size;
-	}
-
-	void SetOutputSize(int size)
-	{
-		outputSize = size;
-	}
 
 	//ctors
 	//////////////////////////////////////
@@ -220,7 +212,7 @@ public:
 	Network(int blockCount, int blockSize) {
 		branchID = rand() % 100;
 		for (int i = 0; i < blockCount; i++) {
-			layers.push_back(new Layer(blockCount,blockSize));
+			layers.push_back(new Layer<Block>(blockCount,blockSize));
 			if (i > 0) {
 				//add connection in between created blocks
 				connections.push_back(Connection(layers[i]->blocks.front(), layers[i-1]->blocks.front()));

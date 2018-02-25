@@ -57,7 +57,7 @@ namespace Unit_Tests
 			int blockCount = 10;
 			Network testNetwork = Network(blockCount, blockSize);
 			Assert::AreEqual(int(testNetwork.layers.size()), blockCount);
-			for each (Layer* l in testNetwork.layers)
+			for each (Layer<Block>* l in testNetwork.layers)
 			{
 				Assert::AreEqual(int(l->blocks.front()->population.size()), blockSize);
 			}
@@ -121,7 +121,7 @@ namespace Unit_Tests
 			Assert::AreEqual(testNetwork.layers[1]->blocks[0]->population[0]->nodePotential, float(0.846153846));
 			
 			//then cleanup input vector
-			for each (Layer* l in testNetwork.layers)
+			for each (Layer<Block>* l in testNetwork.layers)
 			{
 				for each(Block* b in l->blocks) 
 				{
