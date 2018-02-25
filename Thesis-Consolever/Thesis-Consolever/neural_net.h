@@ -137,34 +137,25 @@ public:
 	}
 
 };
-
-class InputConnection : public Connection 
+class IO_Block : public Block
 {
 public:
-	vector<float>* refToInputs;
-	int inputNumber = -1;
-	float inputData;
-	InputConnection(Block* dest, int inputNum, vector<float>* refToInputArray) 
+	std::string label;
+	bool isInput;
+
+	//true means input block, false means output block
+	IO_Block(std::string nameOfLabel, bool amInput) 
 	{
-		refToInputs = refToInputArray;
-		destinationBlock = dest;
+		isInput = amInput;
+		label = nameOfLabel;
 	};
 
-	//must be called with each new run
-	//input array in network is updated
-	//then using the pointer in this connection to that input
-	//we pull the new data
-	void updateInputData() 
-	{
-		inputData = refToInputs->at(inputNumber);
-	};
+
 
 };
 
-class OutputConnection : public Connection 
-{
-};
 
+//convert to template?
 class Layer 
 {
 public:
@@ -194,13 +185,14 @@ public:
 	//id
 	float branchID;
 
-	int inputSize;
-	vector<float> inputs;
-	int outputSize;
-	vector<float> outputs;
+	//inputs to network
+	
 
-	//this is created after network generation and is used to allow backpropagation
-	//need to add layer funcitonality here?
+	//outputs to network
+
+
+
+	//hidden layers of network	
 	vector<Layer*> layers;
 
 	//list of references evolved branches from this branch
