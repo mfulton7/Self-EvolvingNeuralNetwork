@@ -60,13 +60,11 @@ public:
 
 	};
 	/////////////////////////////////////////////////
-
-	
-
-
 };
 
 
+
+//need to create inherited connection subclass for input and output connections  
 class Connection {
 public:
 	float distanceBetweenBlock;
@@ -75,7 +73,11 @@ public:
 	std::vector<float> angleOfConnection;
 	Block* originBlock;
 	Block* destinationBlock;
+	
 
+	Connection() {
+		strengthOfConnection = 0;
+	};
 	Connection(Block* dest, Block* origin) {
 		destinationBlock = dest;
 		originBlock = origin;
@@ -136,6 +138,33 @@ public:
 
 };
 
+class InputConnection : public Connection 
+{
+public:
+	vector<float>* refToInputs;
+	int inputNumber = -1;
+	float inputData;
+	InputConnection(Block* dest, int inputNum, vector<float>* refToInputArray) 
+	{
+		refToInputs = refToInputArray;
+		destinationBlock = dest;
+	};
+
+	//must be called with each new run
+	//input array in network is updated
+	//then using the pointer in this connection to that input
+	//we pull the new data
+	void updateInputData() 
+	{
+		inputData = refToInputs->at(inputNumber);
+	};
+
+};
+
+class OutputConnection : public Connection 
+{
+};
+
 class Layer 
 {
 public:
@@ -165,8 +194,9 @@ public:
 	//id
 	float branchID;
 
+	int inputSize;
 	vector<float> inputs;
-
+	int outputSize;
 	vector<float> outputs;
 
 	//this is created after network generation and is used to allow backpropagation
@@ -178,6 +208,16 @@ public:
 
 	//list of connections between blocks
 	vector<Connection> connections;
+
+	void SetInputSize(int size) 
+	{
+		inputSize = size;
+	}
+
+	void SetOutputSize(int size)
+	{
+		outputSize = size;
+	}
 
 	//ctors
 	//////////////////////////////////////
@@ -194,6 +234,12 @@ public:
 				connections.push_back(Connection(layers[i]->blocks.front(), layers[i-1]->blocks.front()));
 			}
 		}
+
+		//need to set input size
+		//and create input connections
+		//same for outputs
+
+		
 	};
 	//////////////////////////////////////
 

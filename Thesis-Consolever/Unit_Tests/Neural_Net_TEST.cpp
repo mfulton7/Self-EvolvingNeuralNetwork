@@ -132,5 +132,12 @@ namespace Unit_Tests
 
 		
 		}
+
+		TEST_METHOD(Check_Data_Refresh_On_Input_Connections) 
+		{
+		
+		
+		}
+
 	};
 }
