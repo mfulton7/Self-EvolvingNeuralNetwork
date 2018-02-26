@@ -16,8 +16,6 @@ int main() {
 	//7 merge successful branches into master
 	//8 goto step 4
 
-	Neuron test = Neuron();
-	//testing system compiles correctly
 	std::cout << "Hello world" << std::endl;
 
 

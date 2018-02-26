@@ -98,8 +98,6 @@ public:
 	//need a version of this for inputs and not a previous block????
 	bool feedForward() 
 	{
-	
-
 		if (int(originBlock->population.size()) == 0 || int(destinationBlock->population.size()) == 0) 
 		{
 			return false;
@@ -201,9 +199,10 @@ public:
 	//outputs to network
 	Layer<IO_Block>* outputs;
 
-
+	//reference number for datapairs in manager
+	int testRef = 0;
 	//hidden layers of network	
-	vector<Layer<Block>*> layers;
+	vector<Layer<Block>*> hiddenLayers;
 
 	//list of references evolved branches from this branch
 	vector<Network*> children;
@@ -214,9 +213,15 @@ public:
 	//sets up input layer to be proper size and tags each item with appropriate name
 	void initializeInputs(vector<std::string> inputNames) 
 	{
+		//create ioblocks for inputs
 		for each (std::string name in inputNames)
 		{
 			this->inputs->addIOBlock(name, true);
+			//create connections between input layer and first layer of hidden layer
+			for each (Block* d in hiddenLayers.front()->blocks)
+			{
+				connections.push_back(Connection(d, this->inputs->blocks.back()));
+			}
 		}
 	};
 
@@ -226,6 +231,10 @@ public:
 		for each (std::string name in outputNames)
 		{
 			this->inputs->addIOBlock(name, false);
+			for each (Block* o in hiddenLayers.back()->blocks)
+			{
+				connections.push_back(Connection(this->outputs->blocks.back(), o));
+			}
 		}
 	};
 
@@ -280,21 +289,22 @@ public:
 
 	//ctor for creating a basic network with x blocks of y size
 	//note this creates a chain configuration
-	Network(int blockCount, int blockSize) {
+	Network(int layerCount, int blocksPerLayer, int blockSize) {
 		branchID = rand() % 100;
-		for (int i = 0; i < blockCount; i++) {
-			layers.push_back(new Layer<Block>(blockCount,blockSize));
-			if (i > 0) {
-				//add connection in between created blocks
-				connections.push_back(Connection(layers[i]->blocks.front(), layers[i-1]->blocks.front()));
+		for (int i = 0; i < layerCount; i++) {
+			hiddenLayers.push_back(new Layer<Block>(blocksPerLayer,blockSize));
+			if (i != 0 ) {
+				//add connection for each block in previous layer to connect to every block in next layer
+				for each (Block* d in hiddenLayers[i]->blocks)
+				{
+					for each (Block* o in hiddenLayers[i-1]->blocks)
+					{
+						connections.push_back(Connection(d, o));
+					}
+				}
 			}
 		}
-
-		//need to set input size
-		//and create input connections
-		//same for outputs
-
-		
+					
 	};
 	//////////////////////////////////////
 
@@ -308,7 +318,9 @@ public:
 	};
 
 	//all steps to backpropagate from error to whole network
-
+	void completeBackwardPass() 
+	{
+	};
 
 
 };

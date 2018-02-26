@@ -22,6 +22,8 @@ public:
 	//1 => use a csv file
 	//2 => use a sql database
 	int testMode;
+
+	TestDataHandler() {};
 	TestDataHandler(int mode)
 	{
 		testMode = mode;
@@ -29,13 +31,14 @@ public:
 
 	auto ReturnData(int dataSetSize)
 	{
+		if (testMode == 0) {
 
-		vector <DataPair<float, float>> dataresult;
-		for (int i = 0; i < dataSetSize; i++) {
-			dataresult.push_back(SimpleEquationDataGeneration());
+			vector <DataPair<float, float>> dataresult;
+			for (int i = 0; i < dataSetSize; i++) {
+				dataresult.push_back(SimpleEquationDataGeneration());
+			}
+			return dataresult;
 		}
-		return dataresult;
-
 	};
 
 	DataPair<float, float> SimpleEquationDataGeneration()
