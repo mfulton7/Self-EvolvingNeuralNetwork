@@ -32,13 +32,13 @@ public:
 
 		vector <DataPair<float, float>> dataresult;
 		for (int i = 0; i < dataSetSize; i++) {
-			dataresult.push_back(EquationDataGeneration());
+			dataresult.push_back(SimpleEquationDataGeneration());
 		}
 		return dataresult;
 
 	};
 
-	DataPair<float, float> EquationDataGeneration()
+	DataPair<float, float> SimpleEquationDataGeneration()
 	{
 		//equation 
 		// y = x^2 +12

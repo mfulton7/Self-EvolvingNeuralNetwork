@@ -8,6 +8,8 @@
 #include <time.h>
 #include <chrono>
 
+#include "data_handlers.h"
+
 using std::vector;
 
 //indivual nodes inside of a block
@@ -148,6 +150,8 @@ public:
 	{
 		isInput = amInput;
 		label = nameOfLabel;
+		//create a single population block to rep one input
+		population.push_back(new Neuron());
 	};
 
 
@@ -177,6 +181,11 @@ public:
 		blocks.push_back(new T(blockSize));
 	}
 
+	void addIOBlock(std::string n, bool inputFlag) 
+	{
+		blocks.push_back(new T(n, inputFlag));
+	};
+
 };
 
 // map that contains list and orientation of neurons(nodes) in network
@@ -187,10 +196,10 @@ public:
 	float branchID;
 
 	//inputs to network
-	vector<Layer<IO_Block>*> inputs;
+	Layer<IO_Block>* inputs;
 
 	//outputs to network
-	vector<Layer<IO_Block>*> outputs;
+	Layer<IO_Block>* outputs;
 
 
 	//hidden layers of network	
@@ -202,6 +211,68 @@ public:
 	//list of connections between blocks
 	vector<Connection> connections;
 
+	//sets up input layer to be proper size and tags each item with appropriate name
+	void initializeInputs(vector<std::string> inputNames) 
+	{
+		for each (std::string name in inputNames)
+		{
+			this->inputs->addIOBlock(name, true);
+		}
+	};
+
+	//sets up output layer to be proper size and tags each item with appropriate nam
+	void initializeOutputs(vector<std::string> outputNames) 
+	{
+		for each (std::string name in outputNames)
+		{
+			this->inputs->addIOBlock(name, false);
+		}
+	};
+
+	//loads input array from a passed datapair
+	//needs to be done with each pass as new data is loaded
+	//must have same parameter as loadoutputs for each pass!!!!
+	void loadInputs(DataPair<float,float> dataPairList) 
+	{
+		int counter = 0;
+		for each (float i in dataPairList.input)
+		{
+			//try to update the inputs for a pass
+			try
+			{
+				this->inputs->blocks[counter]->population.front()->nodePotential = i;
+			}
+			catch (const std::exception&)
+			{
+				//this->inputs->blocks.pu
+			}
+			//if exception then the input hasn't been setup yet.
+			counter++;
+		}
+	};
+
+	//loads output array from passed datapair
+	//needs to be done before each pass
+	void loadOutputs(DataPair<float, float> dataPairList)
+	{
+		int counter = 0;
+		for each (float i in dataPairList.output)
+		{
+			//try to update the inputs for a pass
+			try
+			{
+				this->outputs->blocks[counter]->population.front()->nodePotential = i;
+			}
+			catch (const std::exception&)
+			{
+				//this->inputs->blocks.pu
+			}
+			//if exception then the output hasn't been setup yet.
+
+			counter++;
+		}
+	
+	};
 
 	//ctors
 	//////////////////////////////////////
