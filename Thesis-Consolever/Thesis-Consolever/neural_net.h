@@ -165,6 +165,9 @@ public:
 
 	vector<T*> blocks;
 
+	//list of connections ORIGINATING in this layer
+	vector<Connection*> connections;
+
 	Layer(int blockCount, int blockSize) 
 	{
 		for (int i = 0; i < blockCount; i++) 
@@ -182,6 +185,10 @@ public:
 	void addIOBlock(std::string n, bool inputFlag) 
 	{
 		blocks.push_back(new T(n, inputFlag));
+	};
+
+	void addConnection(Connection* c) {
+		connections.push_back(c);
 	};
 
 };
@@ -220,7 +227,8 @@ public:
 			//create connections between input layer and first layer of hidden layer
 			for each (Block* d in hiddenLayers.front()->blocks)
 			{
-				connections.push_back(Connection(d, this->inputs->blocks.back()));
+				//connections.push_back(Connection(d, this->inputs->blocks.back()));
+				this->inputs->addConnection(new Connection(d, this->inputs->blocks.back()));
 			}
 		}
 	};
@@ -230,10 +238,11 @@ public:
 	{
 		for each (std::string name in outputNames)
 		{
-			this->inputs->addIOBlock(name, false);
+			this->outputs->addIOBlock(name, false);
 			for each (Block* o in hiddenLayers.back()->blocks)
 			{
-				connections.push_back(Connection(this->outputs->blocks.back(), o));
+				//connections.push_back(Connection(this->outputs->blocks.back(), o));
+				this->outputs->addConnection(new Connection(this->outputs->blocks.back(), o));
 			}
 		}
 	};
@@ -299,7 +308,10 @@ public:
 				{
 					for each (Block* o in hiddenLayers[i-1]->blocks)
 					{
-						connections.push_back(Connection(d, o));
+						//connections.push_back(Connection(d, o));
+						//changed implementation so that connections are stored inside layers instead of the main connections list
+						//note all connections in a layer originate in that layer
+						hiddenLayers[i - 1]->addConnection(new Connection(d, o));
 					}
 				}
 			}

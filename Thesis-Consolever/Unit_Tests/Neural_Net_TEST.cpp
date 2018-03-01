@@ -83,7 +83,17 @@ namespace Unit_Tests
 			int blockSize = 10;
 			int blocksPerLayer = 10;
 			Network testNetwork = Network(layerCount, blocksPerLayer, blockSize);
-			Assert::AreEqual(int(testNetwork.connections.size()), 900);
+			for each (Layer<Block>* l in testNetwork.hiddenLayers)
+			{
+				//last layer will have no connections in this case
+				//fix later when adding testing with output layer
+				if (l == testNetwork.hiddenLayers.back()) 
+				{
+					continue;
+				};
+				Assert::AreEqual(int(l->connections.size()), 100);
+			}
+			
 		}
 
 		//
@@ -102,14 +112,14 @@ namespace Unit_Tests
 			testNetwork.hiddenLayers[0]->blocks[0]->population[0]->nodePotential = 5;
 			testNetwork.hiddenLayers[1]->blocks[0]->population[0]->nodePotential = 3;
 			//set starting weights
-			testNetwork.connections[0].strengthOfConnection = 0.5;
+			testNetwork.hiddenLayers[0]->connections[0]->strengthOfConnection = 0.5;
 			return testNetwork;
 		}
 
 		TEST_METHOD(Check_Feed_Forward) 
 		{
 			Network testNetwork = setupTestNetwork();
-			bool suceeded = testNetwork.connections[0].feedForward();
+			bool suceeded = testNetwork.hiddenLayers[0]->connections[0]->feedForward();
 			//complete feed forward will be
 			//input * weight + bias
 			//should be (.5 * 5) + 3
@@ -123,7 +133,7 @@ namespace Unit_Tests
 			//combine input and node potential 
 			//now should be (.5 * 5) +3 = 5.5
 			//quash function 5.5/6.5 = ~.84
-			testNetwork.connections[0].addInputsToNodeAndWipeInputVector();
+			testNetwork.hiddenLayers[0]->connections[0]->addInputsToNodeAndWipeInputVector();
 			Assert::AreEqual(testNetwork.hiddenLayers[1]->blocks[0]->population[0]->nodePotential, float(0.846153846));
 			
 			//then cleanup input vector
