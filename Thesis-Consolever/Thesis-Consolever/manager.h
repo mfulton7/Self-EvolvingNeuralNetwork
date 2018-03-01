@@ -45,12 +45,25 @@ public:
 		selectedNetwork->loadOutputs(testDataSet[selectedNetwork->testRef]);
 		//forward pass
 		//need to loop through all connections
-		//but how to do connections in proper order?
-		//idea 1 change connections to be a layer like encapsulation
-		//idea 2 move connections to be stored inside the layer class
-		//idea 3 overload > operator for connections based upon the origin block and then sort the list of 
-		//connections before processing the connections
+		//feed forward from input to hidden
+		for each (Connection* inputCon in selectedNetwork->inputs->connections)
+		{
 
+		}
+		//feedforward through all hidden layers
+		for each(Layer<Block>* hl in selectedNetwork->hiddenLayers) 
+		{
+			//for each layer feed all connections in layer
+			for each(Connection* hiddenCon in hl->connections) 
+			{
+				//stuff and things
+			}
+		}
+		//feed forward from hidden layers to output
+		for each(Connection* outputCon in selectedNetwork->outputs->connections) 
+		{
+		
+		}
 		//compare result to output
 		//back propagate error
 	};
