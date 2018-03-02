@@ -133,7 +133,7 @@ namespace Unit_Tests
 			//combine input and node potential 
 			//now should be (.5 * 5) +3 = 5.5
 			//quash function 5.5/6.5 = ~.84
-			testNetwork.hiddenLayers[0]->connections[0]->addInputsToNodeAndWipeInputVector();
+			testNetwork.hiddenLayers[0]->blocks[0]->addInputsToNodeAndWipeInputVector();
 			Assert::AreEqual(testNetwork.hiddenLayers[1]->blocks[0]->population[0]->nodePotential, float(0.846153846));
 			
 			//then cleanup input vector

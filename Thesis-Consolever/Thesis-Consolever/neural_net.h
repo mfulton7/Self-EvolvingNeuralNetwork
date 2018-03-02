@@ -62,6 +62,27 @@ public:
 
 	};
 	/////////////////////////////////////////////////
+
+	//this moves input data in a block to the nodepotential
+	//should be called after all inputs to a block have been sent
+	void addInputsToNodeAndWipeInputVector()
+	{
+		//sum inputs
+		float sumOfInputs = 0.0f;
+		for each (float input in this->inputFromConnections)
+		{
+			sumOfInputs += input;
+		}
+		//apply summation of inputs to every neuron in block
+		//and trigger activation function
+		for each (Neuron* n in this->population)
+		{
+			n->nodePotential += sumOfInputs;
+			n->activateSigmoid();
+		}
+		//wipe
+		this->inputFromConnections.clear();
+	}
 };
 
 
@@ -115,26 +136,7 @@ public:
 		}
 	};
 
-	//called after feedforward 
-	//maybe combine with feedforward function
-	void addInputsToNodeAndWipeInputVector() 
-	{
-		//sum inputs
-		float sumOfInputs = 0.0f;
-		for each (float input in destinationBlock->inputFromConnections)
-		{
-			sumOfInputs += input;
-		}
-		//apply summation of inputs to every neuron in block
-		//and trigger activation function
-		for each (Neuron* n in destinationBlock->population)
-		{
-			n->nodePotential += sumOfInputs;
-			n->activateSigmoid();
-		}
-		//wipe
-		destinationBlock->inputFromConnections.clear();
-	}
+
 
 };
 class IO_Block : public Block

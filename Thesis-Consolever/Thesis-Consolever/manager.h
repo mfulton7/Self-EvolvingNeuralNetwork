@@ -23,14 +23,16 @@ public:
 	};
 
 	//does all steps required to create a traditional network using algorithms 
-	Network spawnStandardNetwork() 
+	Network* spawnStandardNetwork() 
 	{
 		//create
-		Network snet(10, 10, 1);
+		Network* snet = new Network(10, 10, 10);
 		//setup input and output specs
-		snet.initializeInputs(vector<std::string>{ "x" });
-		snet.initializeOutputs(vector<std::string>{"y"});
+		snet->initializeInputs(vector<std::string>{ "x" });
+		snet->initializeOutputs(vector<std::string>{"y"});
 		populateTestDataList(10);
+
+		return snet;
 	};
 
 	//fils the test data array 
@@ -45,27 +47,43 @@ public:
 		selectedNetwork->loadOutputs(testDataSet[selectedNetwork->testRef]);
 		//forward pass
 		//need to loop through all connections
-		//feed forward from input to hidden
+
+		// 1 - feed forward from input to hidden
+		//wiping not required for input layer since it is the start
 		for each (Connection* inputCon in selectedNetwork->inputs->connections)
 		{
-
+			inputCon->feedForward();
 		}
-		//feedforward through all hidden layers
+		////////////////////////////////////////////////////////////////////////////////
+		// 2 - feedforward through all hidden layers
 		for each(Layer<Block>* hl in selectedNetwork->hiddenLayers) 
 		{
-			//for each layer feed all connections in layer
+			//for every block in the layer move the input data from previous layer to node potential
+			for each(Block* hb in hl->blocks) 
+			{
+				hb->addInputsToNodeAndWipeInputVector();
+			}
+
+			//for each connection in layer feed forward data to input buffer in next layer
 			for each(Connection* hiddenCon in hl->connections) 
 			{
-				//stuff and things
+				hiddenCon->feedForward();
 			}
 		}
-		//feed forward from hidden layers to output
+		////////////////////////////////////////////////////////////////////////////////
+		// 3 - feed forward from hidden layers to output
+		for each(IO_Block* ob in selectedNetwork->outputs->blocks) 
+		{
+			ob->addInputsToNodeAndWipeInputVector();
+		}
 		for each(Connection* outputCon in selectedNetwork->outputs->connections) 
 		{
-		
+			outputCon->feedForward();
 		}
-		//compare result to output
-		//back propagate error
+
+
+		// 4 - compare result to output
+		// 5 - back propagate error
 	};
 	// run x number of passes
 	void runPass(int passesToRun, Network* selectedNetwok)

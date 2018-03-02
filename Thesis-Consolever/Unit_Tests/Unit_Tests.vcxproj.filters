@@ -32,5 +32,8 @@
     <ClCompile Include="Data_Generation_TEST.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Manager_TEST.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>
