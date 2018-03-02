@@ -78,6 +78,7 @@ public:
 		}
 		for each(Connection* outputCon in selectedNetwork->outputs->connections) 
 		{
+			//is this needed for last layer?
 			outputCon->feedForward();
 		}
 

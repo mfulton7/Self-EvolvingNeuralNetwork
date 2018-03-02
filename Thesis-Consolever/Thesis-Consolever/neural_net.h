@@ -151,7 +151,7 @@ public:
 		isInput = amInput;
 		label = nameOfLabel;
 		//create a single population block to rep one input
-		population.push_back(new Neuron());
+		//population.push_back(new Neuron());
 	};
 
 
@@ -169,6 +169,11 @@ public:
 
 	//list of connections ORIGINATING in this layer
 	vector<Connection*> connections;
+
+	Layer() 
+	{
+		
+	}
 
 	Layer(int blockCount, int blockSize) 
 	{
@@ -216,12 +221,10 @@ public:
 	//list of references evolved branches from this branch
 	vector<Network*> children;
 
-	//list of connections between blocks
-	vector<Connection> connections;
-
 	//sets up input layer to be proper size and tags each item with appropriate name
 	void initializeInputs(vector<std::string> inputNames) 
 	{
+		//this->inputs = new Layer<IO_Block>;
 		//create ioblocks for inputs
 		for each (std::string name in inputNames)
 		{
@@ -302,6 +305,8 @@ public:
 	//note this creates a chain configuration
 	Network(int layerCount, int blocksPerLayer, int blockSize) {
 		branchID = rand() % 100;
+		inputs = new Layer<IO_Block>;
+		outputs = new Layer<IO_Block>;
 		for (int i = 0; i < layerCount; i++) {
 			hiddenLayers.push_back(new Layer<Block>(blocksPerLayer,blockSize));
 			if (i != 0 ) {
