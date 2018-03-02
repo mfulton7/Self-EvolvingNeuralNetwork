@@ -246,8 +246,9 @@ public:
 			this->outputs->addIOBlock(name, false);
 			for each (Block* o in hiddenLayers.back()->blocks)
 			{
-				//connections.push_back(Connection(this->outputs->blocks.back(), o));
-				this->outputs->addConnection(new Connection(this->outputs->blocks.back(), o));
+				//connections reside in the layer that they start in 
+				//so no connections should exist in the actual output layer
+				this->hiddenLayers.back()->addConnection(new Connection(this->outputs->blocks.back(), o));
 			}
 		}
 	};
@@ -330,9 +331,44 @@ public:
 	//all steps to go forward from input to output
 	void completeForwardPass() 
 	{
-		//pass input to first layer
-		//feedforward for all connections
-		//add and wipe for all connections
+		
+		//forward pass
+		//need to loop through all connections
+
+		// 1 - feed forward from input to hidden
+		//wiping not required for input layer since it is the start
+		for each (Connection* inputCon in this->inputs->connections)
+		{
+			inputCon->feedForward();
+		}
+		////////////////////////////////////////////////////////////////////////////////
+		// 2 - feedforward through all hidden layers
+		for each(Layer<Block>* hl in this->hiddenLayers)
+		{
+			//for every block in the layer move the input data from previous layer to node potential
+			for each(Block* hb in hl->blocks)
+			{
+				hb->addInputsToNodeAndWipeInputVector();
+			}
+
+			//for each connection in layer feed forward data to input buffer in next layer
+			for each(Connection* hiddenCon in hl->connections)
+			{
+				hiddenCon->feedForward();
+			}
+		}
+		////////////////////////////////////////////////////////////////////////////////
+		// 3 - feed forward from hidden layers to output
+		for each(IO_Block* ob in this->outputs->blocks)
+		{
+			ob->addInputsToNodeAndWipeInputVector();
+		}
+		for each(Connection* outputCon in this->outputs->connections)
+		{
+			outputCon->feedForward();
+		}
+
+		//return an array of outputs??
 	
 	};
 

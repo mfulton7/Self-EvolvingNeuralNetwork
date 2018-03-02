@@ -45,43 +45,7 @@ public:
 		//load input and output
 		selectedNetwork->loadInputs(testDataSet[selectedNetwork->testRef]);
 		selectedNetwork->loadOutputs(testDataSet[selectedNetwork->testRef]);
-		//forward pass
-		//need to loop through all connections
-
-		// 1 - feed forward from input to hidden
-		//wiping not required for input layer since it is the start
-		for each (Connection* inputCon in selectedNetwork->inputs->connections)
-		{
-			inputCon->feedForward();
-		}
-		////////////////////////////////////////////////////////////////////////////////
-		// 2 - feedforward through all hidden layers
-		for each(Layer<Block>* hl in selectedNetwork->hiddenLayers) 
-		{
-			//for every block in the layer move the input data from previous layer to node potential
-			for each(Block* hb in hl->blocks) 
-			{
-				hb->addInputsToNodeAndWipeInputVector();
-			}
-
-			//for each connection in layer feed forward data to input buffer in next layer
-			for each(Connection* hiddenCon in hl->connections) 
-			{
-				hiddenCon->feedForward();
-			}
-		}
-		////////////////////////////////////////////////////////////////////////////////
-		// 3 - feed forward from hidden layers to output
-		for each(IO_Block* ob in selectedNetwork->outputs->blocks) 
-		{
-			ob->addInputsToNodeAndWipeInputVector();
-		}
-		for each(Connection* outputCon in selectedNetwork->outputs->connections) 
-		{
-			//is this needed for last layer?
-			outputCon->feedForward();
-		}
-
+		selectedNetwork->completeBackwardPass();
 
 		// 4 - compare result to output
 		// 5 - back propagate error
