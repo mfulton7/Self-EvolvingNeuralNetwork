@@ -20,8 +20,14 @@ public:
 	float nodePotential;
 
 	//default ctor
-	Neuron() {
-		nodePotential = 1;
+	Neuron(bool random) {
+		if (random) {
+			//create random weight between 0 and 1
+			nodePotential = ((float)rand() / RAND_MAX);
+		}
+		else {
+			nodePotential = 1;
+		}
 	};
 
 	//activation function
