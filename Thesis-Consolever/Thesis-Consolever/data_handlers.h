@@ -46,7 +46,7 @@ public:
 	{
 		//equation 
 		// y = x^2 +12
-		float in = rand() % 1000;
+		float in = rand() % 100;
 		float out = ((in*in) + 12) / 5;
 		DataPair<float, float> newPair;
 		newPair.input.push_back(in);

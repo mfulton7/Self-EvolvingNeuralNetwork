@@ -359,7 +359,7 @@ public:
 		// 1/2(target - output) ^ 2
 		for(int i = 0; i< correctOutputs.size(); i++)
 		{
-			float result = (correctOutputs[i] - outputs[i].blocks.front()->population.front()->nodePotential);
+			float result = (correctOutputs[i] - outputs[i].blocks.front()->totalOutput);
 			result * result;
 			result / 2;
 			indErrorList.push_back(result);
@@ -447,8 +447,14 @@ public:
 	};
 
 	//all steps to backpropagate from error to whole network
+	//call after forwards and compare result
 	void completeBackwardPass() 
 	{
+		//semantics for backprop are slightly different for output layer and hidden layer
+
+		//output back prop
+
+		//hidden back prop
 	};
 
 

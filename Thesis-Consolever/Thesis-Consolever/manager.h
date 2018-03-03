@@ -58,6 +58,7 @@ public:
 		for (int i = 0; i < passesToRun; i++) 
 		{
 			runPass(selectedNetwok);
+			selectedNetwok->testRef++;
 		}
 	};
 };
