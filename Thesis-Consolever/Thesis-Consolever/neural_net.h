@@ -85,13 +85,22 @@ public:
 
 	//this sums the net input to a block
 	//should be called after all inputs to a block have been sent
-	void sumInputsAndWipeInputVector(bool isOutput)
+	void sumInputsAndWipeInputVector(bool isInput, bool isOutput)
 	{
 		//sum inputs
 		float sumOfInputs = 0.0f;
-		for each (float input in this->inputFromConnections)
+		//if this isn't in the first (input) layer then pull from input buffer
+		if (!isInput) {
+			for each (float input in this->inputFromConnections)
+			{
+				sumOfInputs += input;
+			}
+		}
+		//if this is in the first layer then input buffer isn't used to pull directly from loaded inputs
+		else 
 		{
-			sumOfInputs += input;
+			sumOfInputs = this->population.front()->nodePotential;
+			
 		}
 		//wipe outputs before recalculatin
 		this->outputFromBlock.clear();
@@ -158,25 +167,15 @@ public:
 
 	//function to send forward prop through connection
 	//input * str of connection + same for all other connections on dest block
-	//after doing this the neurons in the destination block must sum up their inputs, squash them, and then freee input vector
-	//need a version of this for inputs and not a previous block????
+	//this must be called after totaloutput for a block is calculated
 	bool feedForward() 
 	{
-		if (int(originBlock->population.size()) == 0 || int(destinationBlock->population.size()) == 0) 
-		{
-			return false;
-		}
-		else 
-		{
-			float blockTotal = 0;
-			for each (Neuron* n in originBlock->population)
-			{
-				blockTotal += n->nodePotential;
-			}
-			float totalOutput = blockTotal * strengthOfConnection;
-			destinationBlock->inputFromConnections.push_back(totalOutput);
+		
+			
+			
+			destinationBlock->inputFromConnections.push_back(originBlock->totalOutput * this->strengthOfConnection);
 			return true;
-		}
+		
 	};
 
 
@@ -407,9 +406,11 @@ public:
 		
 		//forward pass
 		//need to loop through all connections
-
+		for each (IO_Block* ib in this->inputs->blocks)
+		{
+			ib->sumInputsAndWipeInputVector(true, false);
+		}
 		// 1 - feed forward from input to hidden
-		//wiping not required for input layer since it is the start
 		for each (Connection* inputCon in this->inputs->connections)
 		{
 			inputCon->feedForward();
@@ -421,7 +422,7 @@ public:
 			//for every block in the layer move the input data from previous layer to node potential
 			for each(Block* hb in hl->blocks)
 			{
-				hb->sumInputsAndWipeInputVector(false);
+				hb->sumInputsAndWipeInputVector(false,false);
 			}
 
 			//for each connection in layer feed forward data to input buffer in next layer
@@ -434,7 +435,7 @@ public:
 		// 3 - feed forward from hidden layers to output
 		for each(IO_Block* ob in this->outputs->blocks)
 		{
-			ob->sumInputsAndWipeInputVector(true);
+			ob->sumInputsAndWipeInputVector(false,true);
 		}
 		/*for each(Connection* outputCon in this->outputs->connections)
 		{

@@ -26,7 +26,7 @@ public:
 	Network* spawnStandardNetwork() 
 	{
 		//create
-		Network* snet = new Network(3, 1, 1);
+		Network* snet = new Network(1, 1, 1);
 		//setup input and output specs
 		snet->initializeInputs(vector<std::string>{ "x" });
 		snet->initializeOutputs(vector<std::string>{"y"});
