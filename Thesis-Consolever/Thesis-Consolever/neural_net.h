@@ -56,14 +56,14 @@ public:
 
 	//default ctor, block only has one with default
 	Block() {
-		population.push_back(new Neuron());
+		population.push_back(new Neuron(true));
 
 	};
 
 	//ctor for a specific block size
 	Block(int size) {
 		for (int i = 0; i < size; i++) {
-			population.push_back(new Neuron());
+			population.push_back(new Neuron(true));
 		}
 
 	};
