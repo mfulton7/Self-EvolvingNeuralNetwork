@@ -23,7 +23,7 @@ namespace Unit_Tests
 		
 		TEST_METHOD(Default_Creation_Of_Neuron)
 		{
-			Neuron testNeuron = Neuron();
+			Neuron testNeuron = Neuron(false);
 			Assert::AreEqual(testNeuron.nodePotential, float(1));
 		}
 
@@ -71,9 +71,13 @@ namespace Unit_Tests
 
 		TEST_METHOD(Check_Sigmoid_Activation_Function) 
 		{	
+			//needs redone since feedforward is no a layer thing
+
 			Block testBlock = Block();
 			testBlock.population[0]->nodePotential = 84;
-			testBlock.population[0]->activateSigmoid();
+			
+			//testBlock.population[0]->activateSigmoid();
+			//testBlock.activateSigmoid();
 			Assert::AreEqual(testBlock.population[0]->nodePotential, float(0.988235295));
 		}
 
@@ -133,7 +137,7 @@ namespace Unit_Tests
 			//combine input and node potential 
 			//now should be (.5 * 5) +3 = 5.5
 			//quash function 5.5/6.5 = ~.84
-			testNetwork.hiddenLayers[0]->blocks[0]->addInputsToNodeAndWipeInputVector();
+			testNetwork.hiddenLayers[0]->blocks[0]->sumInputsAndWipeInputVector(false);
 			Assert::AreEqual(testNetwork.hiddenLayers[1]->blocks[0]->population[0]->nodePotential, float(0.846153846));
 			
 			//then cleanup input vector

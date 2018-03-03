@@ -30,14 +30,7 @@ public:
 		}
 	};
 
-	//activation function
-	//to be run after weights are summed into nodepotential
-	void activateSigmoid() 
-	{
-		//using "fast sigmoid"
-		nodePotential = nodePotential / (1 + abs(nodePotential));
 	
-	};
 };
 
 //encapsulating all connections via blocks allows for fine neuron interactions and the ability to scale up easily
@@ -48,7 +41,18 @@ public:
 	vector<Neuron*> population;
 
 	//list of recieved inputs from connections
+	//sum of this list should be the net input of the block
 	vector<float> inputFromConnections;
+
+	//list of all neurons in block outputs
+	//where output of a neuron is defined as
+	//the summation of all inputs to the neuron where each input is
+	//(output from connected blocks * str of connection)
+	// that summation + the bias of the neuron (nodepotential)
+	vector<float> outputFromBlock;
+
+	//summed and quashed output of this block
+	float totalOutput;
 
 
 	//constructors
@@ -69,9 +73,19 @@ public:
 	};
 	/////////////////////////////////////////////////
 
-	//this moves input data in a block to the nodepotential
+	//activation function
+	//to be run after weights are summed into nodepotential
+	void activateSigmoid(float summedOutput)
+	{
+		
+		//quash sum using "fast sigmoid"
+		totalOutput = summedOutput / (1 + abs(summedOutput));
+
+	};
+
+	//this sums the net input to a block
 	//should be called after all inputs to a block have been sent
-	void addInputsToNodeAndWipeInputVector()
+	void sumInputsAndWipeInputVector(bool isOutput)
 	{
 		//sum inputs
 		float sumOfInputs = 0.0f;
@@ -79,13 +93,35 @@ public:
 		{
 			sumOfInputs += input;
 		}
-		//apply summation of inputs to every neuron in block
+		//wipe outputs before recalculatin
+		this->outputFromBlock.clear();
+		//apply summation of inputs 
 		//and trigger activation function
 		for each (Neuron* n in this->population)
 		{
-			n->nodePotential += sumOfInputs;
-			n->activateSigmoid();
+			this->outputFromBlock.push_back(n->nodePotential + sumOfInputs);
+			//n->nodePotential += sumOfInputs;
+			
 		}
+		
+		float outputSum = 0;
+		//sum output array
+		for each (float o in this->outputFromBlock)
+		{
+			outputSum += o;
+		}
+
+		// only quash output if this is not an output layer
+		if (!isOutput) 
+		{
+			activateSigmoid(outputSum);
+		}
+		// if it is an output layer then do not quash down
+		else 
+		{
+			totalOutput = outputSum;
+		}
+
 		//wipe
 		this->inputFromConnections.clear();
 	}
@@ -105,16 +141,17 @@ public:
 	
 
 	Connection() {
-		strengthOfConnection = 0;
+		strengthOfConnection = 1;
 	};
 	Connection(Block* dest, Block* origin) {
 		destinationBlock = dest;
 		originBlock = origin;
+		strengthOfConnection = 1; 
 	};
 	Connection(float dist, std::vector<float> angle, Block* dest, Block* origin) {
 		distanceBetweenBlock = dist;
 		angleOfConnection = angle;
-		strengthOfConnection = 0;
+		strengthOfConnection = 1;
 		destinationBlock = dest;
 		originBlock = origin;
 	};
@@ -219,6 +256,15 @@ public:
 	//outputs to network
 	Layer<IO_Block>* outputs;
 
+	//correct outputs to network
+	vector<float> correctOutputs;
+
+	//list of error of each output
+	vector<float> indErrorList;
+	//calculated total error of network
+	//error of 1 + 2 ... n
+	float totalError;
+
 	//reference number for datapairs in manager
 	int testRef = 0;
 	//hidden layers of network	
@@ -291,7 +337,7 @@ public:
 			//try to update the inputs for a pass
 			try
 			{
-				this->outputs->blocks[counter]->population.front()->nodePotential = i;
+				this->correctOutputs.push_back(i);
 			}
 			catch (const std::exception&)
 			{
@@ -302,6 +348,27 @@ public:
 			counter++;
 		}
 	
+	};
+
+	//compares generated and correct outputs
+	void compareResults() 
+	{
+		//clear error list before beginning
+		indErrorList.clear();
+		int totalResult = 0;
+		//using squared error function
+		// 1/2(target - output) ^ 2
+		for(int i = 0; i< correctOutputs.size(); i++)
+		{
+			float result = (correctOutputs[i] - outputs[i].blocks.front()->population.front()->nodePotential);
+			result * result;
+			result / 2;
+			indErrorList.push_back(result);
+			totalResult += result;
+		}
+
+		totalError = totalResult;
+		
 	};
 
 	//ctors
@@ -354,7 +421,7 @@ public:
 			//for every block in the layer move the input data from previous layer to node potential
 			for each(Block* hb in hl->blocks)
 			{
-				hb->addInputsToNodeAndWipeInputVector();
+				hb->sumInputsAndWipeInputVector(false);
 			}
 
 			//for each connection in layer feed forward data to input buffer in next layer
@@ -367,12 +434,12 @@ public:
 		// 3 - feed forward from hidden layers to output
 		for each(IO_Block* ob in this->outputs->blocks)
 		{
-			ob->addInputsToNodeAndWipeInputVector();
+			ob->sumInputsAndWipeInputVector(true);
 		}
-		for each(Connection* outputCon in this->outputs->connections)
+		/*for each(Connection* outputCon in this->outputs->connections)
 		{
 			outputCon->feedForward();
-		}
+		}*/
 
 		//return an array of outputs??
 	

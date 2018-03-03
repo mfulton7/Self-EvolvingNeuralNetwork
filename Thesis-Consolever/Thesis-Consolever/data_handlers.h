@@ -10,6 +10,7 @@ struct DataPair
 {
 public:
 	vector<inputFormat> input;
+	//correct output
 	vector<outputFormat> output;
 };
 
