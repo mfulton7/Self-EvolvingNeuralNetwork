@@ -488,6 +488,11 @@ public:
 					//where the summation of connected errors are the calculated errors of all connections that have the destination block
 					//of this connection as an origin block for another connection
 					//and netinput refers to the prequashed value of all inputs to the destination block
+					//TODO
+					// 1 need a way to save net input total before quashing
+					// 2 need a way to save error values for weights b/c they will be need in further passes
+					// 3 need a method to get a summation of weights given a connection
+					//float errorC = c->destinationBlock->totalOutput * (1 - c->destinationBlock->totalOutput) * c->destinationBlock->
 				}
 			}
 			
