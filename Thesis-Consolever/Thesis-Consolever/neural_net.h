@@ -465,6 +465,7 @@ public:
 			for each (Connection* c in l->connections)
 			{
 				//if statement to catch all connections that lead to outputs
+				//may want to refactor this check to something more efficient?
 				if (typeid(c->destinationBlock).name() == "IO_Block") {
 					//output back prop uses delta rule
 					//error of this connection is equivalent to
@@ -482,6 +483,11 @@ public:
 				else
 				{
 					//more complicated hidden layer stuff
+					//error of hidden to hidden connection is equivalent to
+					//Error(hc) = (summation of connected errors) * (dest.totaloutput * (1 - dest.totaloutput)) * dest.netinput
+					//where the summation of connected errors are the calculated errors of all connections that have the destination block
+					//of this connection as an origin block for another connection
+					//and netinput refers to the prequashed value of all inputs to the destination block
 				}
 			}
 			
