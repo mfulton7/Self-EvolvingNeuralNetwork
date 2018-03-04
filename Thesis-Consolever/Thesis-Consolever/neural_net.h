@@ -7,6 +7,7 @@
 #include <ctime>
 #include <time.h>
 #include <chrono>
+#include <typeinfo>
 
 #include "data_handlers.h"
 
@@ -249,6 +250,9 @@ public:
 	//id
 	float branchID;
 
+	//rate at which changes to network via backprop are multiplied
+	float learningRate = 1;
+
 	//inputs to network
 	Layer<IO_Block>* inputs;
 
@@ -260,6 +264,7 @@ public:
 
 	//list of error of each output
 	vector<float> indErrorList;
+
 	//calculated total error of network
 	//error of 1 + 2 ... n
 	float totalError;
@@ -452,9 +457,35 @@ public:
 	{
 		//semantics for backprop are slightly different for output layer and hidden layer
 
-		//output back prop
+		//
+		for each (Layer<Block>* l in hiddenLayers)
+		{
 
-		//hidden back prop
+
+			for each (Connection* c in l->connections)
+			{
+				//if statement to catch all connections that lead to outputs
+				if (typeid(c->destinationBlock).name() == "IO_Block") {
+					//output back prop uses delta rule
+					//error of this connection is equivalent to
+					//Error(oc) = - (correctOutput - dest.totatloutput) * dest.totaloutput(1 - dest.totaloutput) * origin.totaloutput
+					//where dest is in the outputs and origin is a member of hidden
+					//TODO
+					//warning will need to find way to find correct position in correct outputs
+					//calculate error with respect to c
+					float errorC = -(this->correctOutputs.front() - c->destinationBlock->totalOutput) * (c->destinationBlock->totalOutput * (1 - c->destinationBlock->totalOutput)) * c->originBlock->totalOutput;
+					//apply calculation
+					c->strengthOfConnection = c->strengthOfConnection - (this->learningRate * errorC);
+				
+				}
+				//if destination is not an ioblock then we are dealing with hidden to hidden connection
+				else
+				{
+					//more complicated hidden layer stuff
+				}
+			}
+			
+		}
 	};
 
 
