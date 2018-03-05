@@ -42,16 +42,11 @@ public:
 	};
 	void runPass(Network* selectedNetwork) 
 	{
-		//load input and output
 		selectedNetwork->loadInputs(testDataSet[selectedNetwork->testRef]);
 		selectedNetwork->loadOutputs(testDataSet[selectedNetwork->testRef]);
 		selectedNetwork->completeForwardPass();
 		selectedNetwork->compareResults();
 		selectedNetwork->completeBackwardPass();
-		//
-
-		// 4 - compare result to output
-		// 5 - back propagate error
 	};
 	// run x number of passes
 	void runPass(int passesToRun, Network* selectedNetwok)
@@ -64,15 +59,5 @@ public:
 	};
 };
 
-//handles algorithms and parameters for neurevolution
-class EvolutionMatrix {
-
-	//method to create new branch
-
-	//method to compare effectiveness of two branches
-
-	//method to fuze branches?
-
-};
 
 #endif // !manager

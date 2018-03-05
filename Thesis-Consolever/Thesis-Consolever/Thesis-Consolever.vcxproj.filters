@@ -29,5 +29,11 @@
     <ClInclude Include="data_handlers.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="evolution_matrix.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="neural_components.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
