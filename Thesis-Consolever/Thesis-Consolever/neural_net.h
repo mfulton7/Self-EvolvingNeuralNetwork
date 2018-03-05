@@ -185,13 +185,11 @@ public:
 	//this must be called after totaloutput for a block is calculated
 	bool feedForward() 
 	{
-		
-			
-			
-			destinationBlock->inputFromConnections.push_back(originBlock->totalOutput * this->strengthOfConnection);
-			return true;
-		
+		destinationBlock->inputFromConnections.push_back(originBlock->totalOutput * this->strengthOfConnection);
+		return true;
 	};
+
+	
 
 
 
@@ -389,6 +387,32 @@ public:
 		
 	};
 
+	//return the summation of connection errors for all connections that the dest of this connections is an origin for
+	float summationOfErrorCalculation(Connection* c) 
+	{
+		//get reference to the block that needs searched
+		auto targetBlock = c->destinationBlock;
+
+		float summation = 0;
+		//now parse layers of network finding connections where target block is an origin
+		//this definitely can be made more efficient
+		//big TODO
+		//only need to check hidden layers since inputs will never have this case and outputs are backpropagated differently
+		for each (Layer<Block>* l in this->hiddenLayers)
+		{
+			for each (Connection* lc in l->connections)
+			{
+				//check if == works???
+				if(lc->originBlock == targetBlock)
+				{
+					summation += lc->connectionError;
+				}
+			}
+		}
+
+		return summation;
+	};
+
 	//ctors
 	//////////////////////////////////////
 	
@@ -478,6 +502,7 @@ public:
 
 			for each (Connection* c in l->connections)
 			{
+				float errorC = 0;
 				//if statement to catch all connections that lead to outputs
 				//may want to refactor this check to something more efficient?
 				if (typeid(c->destinationBlock).name() == "IO_Block") {
@@ -488,11 +513,11 @@ public:
 					//TODO
 					//warning will need to find way to find correct position in correct outputs
 					//calculate error with respect to c
-					float errorC = -(this->correctOutputs.front() - c->destinationBlock->totalOutput) * (c->destinationBlock->totalOutput * (1 - c->destinationBlock->totalOutput)) * c->originBlock->totalOutput;
+					errorC = -(this->correctOutputs.front() - c->destinationBlock->totalOutput) * (c->destinationBlock->totalOutput * (1 - c->destinationBlock->totalOutput)) * c->originBlock->totalOutput;
 					//apply calculation
 					c->strengthOfConnection = c->strengthOfConnection - (this->learningRate * errorC);
 					//save error value to connection for use later in backprop calc
-					c->connectionError = errorC;
+					
 				
 				}
 				//if destination is not an ioblock then we are dealing with hidden to hidden connection
@@ -509,9 +534,16 @@ public:
 					// done
 					// 2 need a way to save error values for weights b/c they will be need in further passes
 					// done
-					// 3 need a method to get a summation of weights given a connection
+					// 3 need a method to get a summation of connected errors
+					// done definitely needs tested....
 					//float errorC = c->destinationBlock->totalOutput * (1 - c->destinationBlock->totalOutput) * c->destinationBlock->
+					//get summation
+					float summationOfErrors = this->summationOfErrorCalculation(c);
+					float destinationOutput = c->destinationBlock->totalOutput;
+					float destinationNet = c->destinationBlock->netInput;
+					errorC = summationOfErrors * (destinationOutput * (1 - destinationOutput)) * destinationNet;
 				}
+				c->connectionError = errorC;
 			}
 			
 		}
