@@ -27,7 +27,7 @@ public:
 	Network* spawnStandardNetwork() 
 	{
 		//create
-		Network* snet = new Network(2, 2, 1);
+		Network* snet = new Network(5, 10, 1);
 		//setup input and output specs
 		snet->initializeInputs(vector<std::string>{ "x" });
 		snet->initializeOutputs(vector<std::string>{"y"});
@@ -60,7 +60,7 @@ public:
 			selectedNet->testRef++;
 			generationAverage += selectedNet->totalError;
 			if (selectedNet->testRef % 100 == 0) {
-				std::cout << "Average Error for generation " << selectedNet->testRef <<" is " << selectedNet->totalError << std::endl;
+				std::cout << "Average Error for generation " << selectedNet->testRef / 100 <<" is " << selectedNet->totalError << std::endl;
 				generationAverage = 0;
 			}
 		}

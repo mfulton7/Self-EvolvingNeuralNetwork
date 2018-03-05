@@ -181,12 +181,14 @@ public:
 
 
 	Connection() {
-		strengthOfConnection = 1;
+		//create random weight between 0 and 1
+		strengthOfConnection = ((float)rand() / RAND_MAX);
 	};
 	Connection(Block* dest, Block* origin) {
 		destinationBlock = dest;
 		originBlock = origin;
-		strengthOfConnection = 1;
+		//create random weight between 0 and 1
+		strengthOfConnection = ((float)rand() / RAND_MAX);
 	};
 	Connection(float dist, std::vector<float> angle, Block* dest, Block* origin) {
 		distanceBetweenBlock = dist;

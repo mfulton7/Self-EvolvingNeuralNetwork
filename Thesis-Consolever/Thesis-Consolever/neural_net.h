@@ -307,7 +307,7 @@ public:
 					//TODO
 					//net needs to be in respect to the connection being checked not the summation of all net inputs
 					float destinationNet = c->destinationBlock->netInput;
-					errorC = summationOfErrors * (destinationOutput * (1 - destinationOutput)) * destinationNet;
+					errorC = summationOfErrors * (destinationOutput * (1 - destinationOutput)) * c->strengthOfConnection;
 				}
 				//save error value to connection for use later in backprop calc
 				c->connectionError = errorC;
