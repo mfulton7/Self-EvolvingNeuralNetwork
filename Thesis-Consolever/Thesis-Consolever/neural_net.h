@@ -45,6 +45,10 @@ public:
 	//sum of this list should be the net input of the block
 	vector<float> inputFromConnections;
 
+	//summation of all inputs
+	//need for backprop calculations
+	float netInput;
+
 	//list of all neurons in block outputs
 	//where output of a neuron is defined as
 	//the summation of all inputs to the neuron where each input is
@@ -103,10 +107,13 @@ public:
 			sumOfInputs = this->population.front()->nodePotential;
 			
 		}
+
+		//save total net input
+		this->netInput = sumOfInputs;
+
 		//wipe outputs before recalculatin
 		this->outputFromBlock.clear();
-		//apply summation of inputs 
-		//and trigger activation function
+		//apply summation of inputs to node bias
 		for each (Neuron* n in this->population)
 		{
 			this->outputFromBlock.push_back(n->nodePotential + sumOfInputs);
@@ -142,12 +149,19 @@ public:
 //need to create inherited connection subclass for input and output connections  
 class Connection {
 public:
-	float distanceBetweenBlock;
 	float strengthOfConnection;
-	//3 dimensional vector representing direction to neuron
-	std::vector<float> angleOfConnection;
 	Block* originBlock;
 	Block* destinationBlock;
+
+	// total error of network with respect to this connection
+	float connectionError;
+
+	////////////////////
+	//will probably need cut?
+	float distanceBetweenBlock;
+	//3 dimensional vector representing direction to neuron
+	std::vector<float> angleOfConnection;
+	///////////////////
 	
 
 	Connection() {
@@ -477,6 +491,8 @@ public:
 					float errorC = -(this->correctOutputs.front() - c->destinationBlock->totalOutput) * (c->destinationBlock->totalOutput * (1 - c->destinationBlock->totalOutput)) * c->originBlock->totalOutput;
 					//apply calculation
 					c->strengthOfConnection = c->strengthOfConnection - (this->learningRate * errorC);
+					//save error value to connection for use later in backprop calc
+					c->connectionError = errorC;
 				
 				}
 				//if destination is not an ioblock then we are dealing with hidden to hidden connection
@@ -490,7 +506,9 @@ public:
 					//and netinput refers to the prequashed value of all inputs to the destination block
 					//TODO
 					// 1 need a way to save net input total before quashing
+					// done
 					// 2 need a way to save error values for weights b/c they will be need in further passes
+					// done
 					// 3 need a method to get a summation of weights given a connection
 					//float errorC = c->destinationBlock->totalOutput * (1 - c->destinationBlock->totalOutput) * c->destinationBlock->
 				}

@@ -47,6 +47,7 @@ public:
 		selectedNetwork->loadOutputs(testDataSet[selectedNetwork->testRef]);
 		selectedNetwork->completeForwardPass();
 		selectedNetwork->compareResults();
+		selectedNetwork->completeBackwardPass();
 		//
 
 		// 4 - compare result to output
