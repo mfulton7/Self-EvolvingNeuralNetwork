@@ -6,6 +6,7 @@
 
 #include<time.h>
 #include<stdlib.h>
+#include<iostream>
 
 #include "neural_net.h"
 #include "data_handlers.h"
@@ -26,11 +27,11 @@ public:
 	Network* spawnStandardNetwork() 
 	{
 		//create
-		Network* snet = new Network(1, 1, 1);
+		Network* snet = new Network(2, 2, 1);
 		//setup input and output specs
 		snet->initializeInputs(vector<std::string>{ "x" });
 		snet->initializeOutputs(vector<std::string>{"y"});
-		populateTestDataList(10);
+		
 
 		return snet;
 	};
@@ -47,14 +48,21 @@ public:
 		selectedNetwork->completeForwardPass();
 		selectedNetwork->compareResults();
 		selectedNetwork->completeBackwardPass();
+		
 	};
 	// run x number of passes
-	void runPass(int passesToRun, Network* selectedNetwok)
+	void runPass(int passesToRun, Network* selectedNet)
 	{
 		for (int i = 0; i < passesToRun; i++) 
 		{
-			runPass(selectedNetwok);
-			selectedNetwok->testRef++;
+			float generationAverage = 0;
+			runPass(selectedNet);
+			selectedNet->testRef++;
+			generationAverage += selectedNet->totalError;
+			if (selectedNet->testRef % 100 == 0) {
+				std::cout << "Average Error for generation " << selectedNet->testRef <<" is " << selectedNet->totalError << std::endl;
+				generationAverage = 0;
+			}
 		}
 	};
 };

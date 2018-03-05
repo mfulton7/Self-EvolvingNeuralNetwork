@@ -86,7 +86,7 @@ public:
 	//must have same parameter as loadoutputs for each pass!!!!
 	void loadInputs(DataPair<float,float> dataPairList) 
 	{
-		int counter = 0;
+		int counter = 0;		
 		for each (float i in dataPairList.input)
 		{
 			//try to update the inputs for a pass
@@ -108,6 +108,8 @@ public:
 	void loadOutputs(DataPair<float, float> dataPairList)
 	{
 		int counter = 0;
+		//clear outputs from last load
+		this->correctOutputs.clear();
 		for each (float i in dataPairList.output)
 		{
 			//try to update the inputs for a pass
@@ -255,17 +257,20 @@ public:
 	{
 		//semantics for backprop are slightly different for output layer and hidden layer
 
-		//
-		for each (Layer<Block>* l in hiddenLayers)
+		//do output layer first
+
+		//then hidden
+		for(int i = this->hiddenLayers.size()-1; i > -1; i--)
 		{
 
 
-			for each (Connection* c in l->connections)
+			for each (Connection* c in this->hiddenLayers[i]->connections)
 			{
 				float errorC = 0;
 				//if statement to catch all connections that lead to outputs
 				//may want to refactor this check to something more efficient?
-				if (typeid(c->destinationBlock).name() == "IO_Block") {
+				//for last layer of hidden do different output calc
+				if (i == this->hiddenLayers.size() - 1) {
 					//output back prop uses delta rule
 					//error of this connection is equivalent to
 					//Error(oc) = - (correctOutput - dest.totatloutput) * dest.totaloutput(1 - dest.totaloutput) * origin.totaloutput
@@ -298,6 +303,9 @@ public:
 					//get summation
 					float summationOfErrors = this->summationOfErrorCalculation(c);
 					float destinationOutput = c->destinationBlock->totalOutput;
+					//net needs changed
+					//TODO
+					//net needs to be in respect to the connection being checked not the summation of all net inputs
 					float destinationNet = c->destinationBlock->netInput;
 					errorC = summationOfErrors * (destinationOutput * (1 - destinationOutput)) * destinationNet;
 				}
@@ -308,6 +316,8 @@ public:
 				
 			}
 		}
+		//todo loop for input
+		//then input layers
 	};
 
 

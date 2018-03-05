@@ -123,16 +123,19 @@ public:
 			outputSum += o;
 		}
 
-		// only quash output if this is not an output layer
-		if (!isOutput)
-		{
-			activateSigmoid(outputSum);
-		}
-		// if it is an output layer then do not quash down
-		else
-		{
-			totalOutput = outputSum;
-		}
+		//// only quash output if this is not an output layer
+		//if (!isOutput)
+		//{
+		//	activateSigmoid(outputSum);
+		//}
+		//// if it is an output layer then do not quash down
+		//else
+		//{
+		//	totalOutput = outputSum;
+		//}
+
+		//i guess quash even for outputs
+		activateSigmoid(outputSum);
 
 		//wipe
 		this->inputFromConnections.clear();
