@@ -27,7 +27,7 @@ public:
 	Network* spawnStandardNetwork() 
 	{
 		//create
-		Network* snet = new Network(5, 10, 1);
+		Network* snet = new Network(10, 20, 1);
 		//setup input and output specs
 		snet->initializeInputs(vector<std::string>{ "x" });
 		snet->initializeOutputs(vector<std::string>{"y"});
@@ -53,14 +53,15 @@ public:
 	// run x number of passes
 	void runPass(int passesToRun, Network* selectedNet)
 	{
+		float generationAverage = 0;
 		for (int i = 0; i < passesToRun; i++) 
 		{
-			float generationAverage = 0;
+			
 			runPass(selectedNet);
 			selectedNet->testRef++;
-			generationAverage += selectedNet->totalError;
+			generationAverage += abs(selectedNet->totalError);
 			if (selectedNet->testRef % 100 == 0) {
-				std::cout << "Average Error for generation " << selectedNet->testRef / 100 <<" is " << selectedNet->totalError << std::endl;
+				std::cout << "Average Error for generation " << selectedNet->testRef / 100 <<" is " << generationAverage / 100 << std::endl;
 				generationAverage = 0;
 			}
 		}

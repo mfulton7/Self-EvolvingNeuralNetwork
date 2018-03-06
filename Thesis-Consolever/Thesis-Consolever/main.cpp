@@ -19,10 +19,10 @@ int main() {
 
 	std::cout << "Hello world" << std::endl;
 	Manager testManager;
-	testManager.populateTestDataList(5000);
+	testManager.populateTestDataList(10000);
 	Network* testNetworkA = testManager.spawnStandardNetwork();
 
-	testManager.runPass(5000, testNetworkA);
+	testManager.runPass(10000, testNetworkA);
 
 
 	system("PAUSE");

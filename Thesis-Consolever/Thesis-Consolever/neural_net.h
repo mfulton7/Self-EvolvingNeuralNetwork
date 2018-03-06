@@ -23,7 +23,7 @@ public:
 	float branchID;
 
 	//rate at which changes to network via backprop are multiplied
-	float learningRate = 1;
+	float learningRate = .2;
 
 	//inputs to network
 	Layer<IO_Block>* inputs;
@@ -115,6 +115,7 @@ public:
 			//try to update the inputs for a pass
 			try
 			{
+				i = i / (1 + abs(i));
 				this->correctOutputs.push_back(i);
 			}
 			catch (const std::exception&)
@@ -133,7 +134,7 @@ public:
 	{
 		//clear error list before beginning
 		indErrorList.clear();
-		int totalResult = 0;
+		float totalResult = 0;
 		//using squared error function
 		// 1/2(target - output) ^ 2
 		for(int i = 0; i< correctOutputs.size(); i++)
