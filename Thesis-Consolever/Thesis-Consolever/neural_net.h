@@ -14,6 +14,13 @@
 
 using std::vector;
 
+//hierarchy
+//the system holds multiple  networks some of which are different versions of one another
+//Networks are a series of layers
+//three kinds of layers inputs, hidden, and outputs
+//layers are comprised of blocks
+//blocks are connected to blocks in other layers via connections
+//blocks are comprised of sets of individual neurons
 
 // map that contains list and orientation of neurons(nodes) in network
 class Network {
@@ -254,6 +261,7 @@ public:
 
 	//all steps to backpropagate from error to whole network
 	//call after forwards and compare result
+	//todo parallelize
 	void completeBackwardPass() 
 	{
 		//semantics for backprop are slightly different for output layer and hidden layer
@@ -263,7 +271,6 @@ public:
 		//then hidden
 		for(int i = this->hiddenLayers.size()-1; i > -1; i--)
 		{
-
 
 			for each (Connection* c in this->hiddenLayers[i]->connections)
 			{
@@ -279,10 +286,7 @@ public:
 					//TODO
 					//warning will need to find way to find correct position in correct outputs
 					//calculate error with respect to c
-					errorC = -(this->correctOutputs.front() - c->destinationBlock->totalOutput) * (c->destinationBlock->totalOutput * (1 - c->destinationBlock->totalOutput)) * c->originBlock->totalOutput;
-					
-					
-				
+					errorC = -(this->correctOutputs.front() - c->destinationBlock->totalOutput) * (c->destinationBlock->totalOutput * (1 - c->destinationBlock->totalOutput)) * c->originBlock->totalOutput;				
 				}
 				//if destination is not an ioblock then we are dealing with hidden to hidden connection
 				else
@@ -304,36 +308,33 @@ public:
 					//get summation
 					float summationOfErrors = this->summationOfErrorCalculation(c);
 					float destinationOutput = c->destinationBlock->totalOutput;
-					//net needs changed
-					//TODO
-					//net needs to be in respect to the connection being checked not the summation of all net inputs
 					float destinationNet = c->destinationBlock->netInput;
 					errorC = summationOfErrors * (destinationOutput * (1 - destinationOutput)) * c->strengthOfConnection;
 				}
 				//save error value to connection for use later in backprop calc
 				c->connectionError = errorC;
 				//apply calculation
-				c->strengthOfConnection = c->strengthOfConnection - (this->learningRate * errorC);
-				
-			}
+				c->strengthOfConnection = c->strengthOfConnection - (this->learningRate * errorC);				
+			}		
 		}
-		//todo loop for input
-		//then input layers
+
+		//loop for input
+		for each (Connection* oc in this->inputs->connections)
+		{
+			float errorI = 0;
+			float summationOfErrors = this->summationOfErrorCalculation(oc);
+			float destinationOutput = oc->destinationBlock->totalOutput;
+			float destinationNet = oc->destinationBlock->netInput;
+			errorI = summationOfErrors * (destinationOutput * (1 - destinationOutput)) * oc->strengthOfConnection;
+
+			oc->connectionError = errorI;
+			oc->strengthOfConnection = oc->strengthOfConnection - (this->learningRate * errorI);
+		}
+		
 	};
 
 
 };
-
-//hierarchy
-//the system holds multiple  networks some of which are different versions of one another
-//Networks are a series of layers
-//three kinds of layers inputs, hidden, and outputs
-//layers are comprised of blocks
-//blocks are connected to blocks in other layers via connections
-//blocks are comprised of sets of individual neurons
-
-
-
 
 #endif // !neural_net
 
