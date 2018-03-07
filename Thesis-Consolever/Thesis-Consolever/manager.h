@@ -24,10 +24,10 @@ public:
 	};
 
 	//does all steps required to create a traditional network using algorithms 
-	Network* spawnStandardNetwork() 
+	Network* spawnStandardNetwork(int layerC, int layerS) 
 	{
 		//create
-		Network* snet = new Network(10, 20, 1);
+		Network* snet = new Network(layerC, layerS, 1);
 		//setup input and output specs
 		snet->initializeInputs(vector<std::string>{ "x" });
 		snet->initializeOutputs(vector<std::string>{"y"});

@@ -8,11 +8,16 @@
 #include <time.h>
 #include <chrono>
 #include <typeinfo>
+#include <thread>
 
 #include "data_handlers.h"
 #include "neural_components.h"
 
+//global constants
+static const int THREAD_COUNT = 8;
+
 using std::vector;
+using std::thread;
 
 //hierarchy
 //the system holds multiple  networks some of which are different versions of one another
@@ -147,8 +152,8 @@ public:
 		for(int i = 0; i< correctOutputs.size(); i++)
 		{
 			float result = (correctOutputs[i] - outputs[i].blocks.front()->totalOutput);
-			result * result;
-			result / 2;
+			result = result * result;
+			result = result / 2;
 			indErrorList.push_back(result);
 			totalResult += result;
 		}
@@ -259,6 +264,79 @@ public:
 	
 	};
 
+	void calculateAndApplyErrorOfConnection(Connection* conn, int hlIndex) 
+	{
+		float errorC = 0;
+		//if statement to catch all connections that lead to outputs
+		//may want to refactor this check to something more efficient?
+		//for last layer of hidden do different output calc
+		if (hlIndex == this->hiddenLayers.size() - 1) {
+			//output back prop uses delta rule
+			//error of this connection is equivalent to
+			//Error(oc) = - (correctOutput - dest.totatloutput) * dest.totaloutput(1 - dest.totaloutput) * origin.totaloutput
+			//where dest is in the outputs and origin is a member of hidden
+			//TODO
+			//warning will need to find way to find correct position in correct outputs
+			//calculate error with respect to c
+			errorC = -(this->correctOutputs.front() - conn->destinationBlock->totalOutput) * (conn->destinationBlock->totalOutput * (1 - conn->destinationBlock->totalOutput)) * conn->originBlock->totalOutput;
+		}
+		//if destination is not an ioblock then we are dealing with hidden to hidden connection
+		else
+		{
+			//error of hidden to hidden connection is equivalent to
+			//Error(hc) = (summation of connected errors) * (dest.totaloutput * (1 - dest.totaloutput)) * dest.netinput
+			//where the summation of connected errors are the calculated errors of all connections that have the destination block
+			//of this connection as an origin block for another connection
+			//and netinput refers to the prequashed value of all inputs to the destination block
+			//get summation
+			float summationOfErrors = this->summationOfErrorCalculation(conn);
+			float destinationOutput = conn->destinationBlock->totalOutput;
+			float destinationNet = conn->destinationBlock->netInput;
+			errorC = summationOfErrors * (destinationOutput * (1 - destinationOutput)) * conn->strengthOfConnection;
+		}
+		//save error value to connection for use later in backprop calc
+		conn->connectionError = errorC;
+		//apply calculation
+		conn->strengthOfConnection = conn->strengthOfConnection - (this->learningRate * errorC);
+	};
+
+	void calculateAndApplyConnectionErrorForRange(int hlIndex, int connectionIndexStart, int connectionIndexEnd) 
+	{
+		for (int i = connectionIndexStart; i < connectionIndexEnd; i++) 
+		{
+			calculateAndApplyErrorOfConnection(this->hiddenLayers[hlIndex]->connections[i], hlIndex);
+		}
+	}
+
+	void runBackwardsOnHiddenLayer(int hiddenLayerIndex) 
+	{
+		vector<thread*> threads;
+		//divide connection list by number of threads that can be used
+		///DEEEEERP DEEERP DEEERP YOU ARE USING THE SIZE OF THE NUMBER OF HIDDEN LAYERS NOT THE SIZE OF THE CONNECTIONS IN THE HIDDEN LAYER YOU MORON!!!!!!!!!!!!!!!!
+		////////////////////////////////////////////////////////
+		//////////////////////FIX IT STUPIDSIOPNVAISVONEWIPOFANKJU
+		int connectionsPerThread = this->hiddenLayers.size() / THREAD_COUNT;
+		int currentIndex = 0;
+		//spawn a thread to work on each connection in the current layer
+		/*for each (Connection* c in this->hiddenLayers[hiddenLayerIndex]->connections)
+		{
+			thread* worker = new thread(&Network::calculateAndApplyErrorOfConnection, this, c, hiddenLayerIndex);
+			threads.push_back(worker);
+		}*/
+		while (threads.size() < THREAD_COUNT) 
+		{
+			thread* worker = new thread(&Network::calculateAndApplyConnectionErrorForRange, this, hiddenLayerIndex, currentIndex, (currentIndex + connectionsPerThread));
+			threads.push_back(worker);
+			currentIndex += connectionsPerThread;
+		}
+		//wait for all threads to finish before exiting function
+		for each (thread* t in threads)
+		{
+			t->join();
+			t->~thread();
+		}
+	};
+
 	//all steps to backpropagate from error to whole network
 	//call after forwards and compare result
 	//todo parallelize
@@ -269,53 +347,12 @@ public:
 		//do output layer first
 
 		//then hidden
-		for(int i = this->hiddenLayers.size()-1; i > -1; i--)
-		{
+		int hiddenSize = this->hiddenLayers.size() - 1;
 
-			for each (Connection* c in this->hiddenLayers[i]->connections)
-			{
-				float errorC = 0;
-				//if statement to catch all connections that lead to outputs
-				//may want to refactor this check to something more efficient?
-				//for last layer of hidden do different output calc
-				if (i == this->hiddenLayers.size() - 1) {
-					//output back prop uses delta rule
-					//error of this connection is equivalent to
-					//Error(oc) = - (correctOutput - dest.totatloutput) * dest.totaloutput(1 - dest.totaloutput) * origin.totaloutput
-					//where dest is in the outputs and origin is a member of hidden
-					//TODO
-					//warning will need to find way to find correct position in correct outputs
-					//calculate error with respect to c
-					errorC = -(this->correctOutputs.front() - c->destinationBlock->totalOutput) * (c->destinationBlock->totalOutput * (1 - c->destinationBlock->totalOutput)) * c->originBlock->totalOutput;				
-				}
-				//if destination is not an ioblock then we are dealing with hidden to hidden connection
-				else
-				{
-					//more complicated hidden layer stuff
-					//error of hidden to hidden connection is equivalent to
-					//Error(hc) = (summation of connected errors) * (dest.totaloutput * (1 - dest.totaloutput)) * dest.netinput
-					//where the summation of connected errors are the calculated errors of all connections that have the destination block
-					//of this connection as an origin block for another connection
-					//and netinput refers to the prequashed value of all inputs to the destination block
-					//TODO
-					// 1 need a way to save net input total before quashing
-					// done
-					// 2 need a way to save error values for weights b/c they will be need in further passes
-					// done
-					// 3 need a method to get a summation of connected errors
-					// done definitely needs tested....
-					//float errorC = c->destinationBlock->totalOutput * (1 - c->destinationBlock->totalOutput) * c->destinationBlock->
-					//get summation
-					float summationOfErrors = this->summationOfErrorCalculation(c);
-					float destinationOutput = c->destinationBlock->totalOutput;
-					float destinationNet = c->destinationBlock->netInput;
-					errorC = summationOfErrors * (destinationOutput * (1 - destinationOutput)) * c->strengthOfConnection;
-				}
-				//save error value to connection for use later in backprop calc
-				c->connectionError = errorC;
-				//apply calculation
-				c->strengthOfConnection = c->strengthOfConnection - (this->learningRate * errorC);				
-			}		
+
+		for(int i = hiddenSize; i > -1; i--)
+		{
+			runBackwardsOnHiddenLayer(i);
 		}
 
 		//loop for input

@@ -1,6 +1,10 @@
 #include <iostream>
 #include "neural_net.h"
 #include "manager.h"
+
+
+
+//
 int main() {
 
 	//preprocessing to determine machine number will need to occur for running on cluster
@@ -18,9 +22,10 @@ int main() {
 	//8 goto step 4
 
 	std::cout << "Hello world" << std::endl;
+	std::cout << std::thread::hardware_concurrency();
 	Manager testManager;
 	testManager.populateTestDataList(10000);
-	Network* testNetworkA = testManager.spawnStandardNetwork();
+	Network* testNetworkA = testManager.spawnStandardNetwork(5, 40);
 
 	testManager.runPass(10000, testNetworkA);
 
