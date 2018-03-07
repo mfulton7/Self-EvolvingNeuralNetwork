@@ -14,7 +14,7 @@
 #include "neural_components.h"
 
 //global constants
-static const int THREAD_COUNT = 8;
+static const int THREAD_COUNT = 4;
 
 using std::vector;
 using std::thread;
@@ -312,10 +312,8 @@ public:
 	{
 		vector<thread*> threads;
 		//divide connection list by number of threads that can be used
-		///DEEEEERP DEEERP DEEERP YOU ARE USING THE SIZE OF THE NUMBER OF HIDDEN LAYERS NOT THE SIZE OF THE CONNECTIONS IN THE HIDDEN LAYER YOU MORON!!!!!!!!!!!!!!!!
-		////////////////////////////////////////////////////////
-		//////////////////////FIX IT STUPIDSIOPNVAISVONEWIPOFANKJU
-		int connectionsPerThread = this->hiddenLayers.size() / THREAD_COUNT;
+		int connectionsPerThread = this->hiddenLayers[hiddenLayerIndex]->connections.size() / THREAD_COUNT;
+		//todo need to find way to catch remainder
 		int currentIndex = 0;
 		//spawn a thread to work on each connection in the current layer
 		/*for each (Connection* c in this->hiddenLayers[hiddenLayerIndex]->connections)
