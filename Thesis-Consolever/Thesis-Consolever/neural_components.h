@@ -260,9 +260,17 @@ public:
 template <typename T>
 class Component 
 {
+public:
 	//need ref to component
-	//position of component
+	T item;
+	// layer reference id
+	// if T is a layer then this would be the layer immediately above T
+	_GUID parentID;
+	//references for the blocks if this is a connection, and connection is an edge case
+	_GUID originID;
+	_GUID destID;
 	//and wheather component links to existing network or is entirely in fragment
+	bool isEdge;
 };
 
 //subclass of network that holds data required to difference networks?

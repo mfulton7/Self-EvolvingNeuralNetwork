@@ -371,13 +371,27 @@ public:
 
 	//operator overloading
 	///////////////////////////////////
-	Network operator - (Network const &r) {}
+	//this returns a network fragment
+	//is meant to return a small substructure that differs between networks
+	friend Network_Fragment operator - (Network const &left, Network const &right);
 
-	Network operator + (Network const &r) {}
+	//takes a base network and adds a network fragment to its structure
+	friend Network operator + (Network_Fragment const &left, Network const &right);
 
-	Network operator = (Network const &r) {}
 	///////////////////////////////////
 };
+
+//definitions of operators
+Network_Fragment operator - (Network const &left, Network const &right) 
+{
+	Network_Fragment result;
+	//need to compute  the difference of left and right networks
+}
+
+Network operator + (Network_Fragment const &left, Network const &right) 
+{
+
+}
 
 #endif // !neural_net
 
