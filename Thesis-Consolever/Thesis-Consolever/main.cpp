@@ -1,4 +1,5 @@
 #include <iostream>
+#include <chrono>
 #include "neural_net.h"
 #include "manager.h"
 
@@ -22,12 +23,13 @@ int main() {
 	//8 goto step 4
 
 	std::cout << "Hello world" << std::endl;
-	std::cout << std::thread::hardware_concurrency();
+	std::cout << "Using " << THREAD_COUNT << " threads." << std::endl;
+	std::cout << "Hardware supports up to " << std::thread::hardware_concurrency() << std::endl;
 	Manager testManager;
-	testManager.populateTestDataList(10000);
+	testManager.populateTestDataList(10);
 	Network* testNetworkA = testManager.spawnStandardNetwork(5, 40);
 
-	testManager.runPass(10000, testNetworkA);
+	testManager.runPass(1, testNetworkA);
 
 
 	system("PAUSE");

@@ -256,5 +256,25 @@ public:
 
 };
 
+//construct to associate neural components with their positions
+template <typename T>
+class Component 
+{
+	//need ref to component
+	//position of component
+	//and wheather component links to existing network or is entirely in fragment
+};
+
+//subclass of network that holds data required to difference networks?
+class Network_Fragment 
+{
+public:
+	//need a list of all differences between two networks
+	//and data to accompany the differences specifying where they fit
+	vector<Component<Block>> blocks;
+	vector<Component<Connection>> connections;
+	vector<Component<Layer<Block>>> layers;
+};
+
 
 #endif // neural_components

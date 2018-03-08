@@ -13,8 +13,8 @@
 #include "data_handlers.h"
 #include "neural_components.h"
 
-//global constants
-static const int THREAD_COUNT = 4;
+//constant definition
+const static int THREAD_COUNT = 8;
 
 using std::vector;
 using std::thread;
@@ -369,6 +369,14 @@ public:
 	};
 
 
+	//operator overloading
+	///////////////////////////////////
+	Network operator - (Network const &r) {}
+
+	Network operator + (Network const &r) {}
+
+	Network operator = (Network const &r) {}
+	///////////////////////////////////
 };
 
 #endif // !neural_net

@@ -11,6 +11,9 @@
 #include "neural_net.h"
 #include "data_handlers.h"
 
+
+
+
 //governs execution and management of networks
 class Manager {
 public:
@@ -56,8 +59,11 @@ public:
 		float generationAverage = 0;
 		for (int i = 0; i < passesToRun; i++) 
 		{
-			
+			std::chrono::high_resolution_clock::time_point start = std::chrono::high_resolution_clock::now();
 			runPass(selectedNet);
+			std::chrono::high_resolution_clock::time_point end = std::chrono::high_resolution_clock::now();
+			auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count();
+			std::cout << "A single pass takes " << duration << std::endl;
 			selectedNet->testRef++;
 			generationAverage += abs(selectedNet->totalError);
 			if (selectedNet->testRef % 100 == 0) {

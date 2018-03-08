@@ -35,5 +35,8 @@
     <ClInclude Include="neural_components.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="statistics_handler.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
