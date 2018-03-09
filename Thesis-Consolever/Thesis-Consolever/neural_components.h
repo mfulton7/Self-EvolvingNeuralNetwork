@@ -187,11 +187,19 @@ public:
 		//create random weight between 0 and 1
 		strengthOfConnection = ((float)rand() / RAND_MAX);
 	};
+	//destination is first then origin
 	Connection(Block* dest, Block* origin) {
 		destinationBlock = dest;
 		originBlock = origin;
 		//create random weight between 0 and 1
 		strengthOfConnection = ((float)rand() / RAND_MAX);
+	};
+	Connection(Block* dest, Block* origin, float str) 
+	{
+		destinationBlock = dest;
+		originBlock = origin;
+		//create random weight between 0 and 1
+		strengthOfConnection = str;
 	};
 	Connection(float dist, std::vector<float> angle, Block* dest, Block* origin) {
 		distanceBetweenBlock = dist;
@@ -265,6 +273,10 @@ template <typename T>
 class Component 
 {
 public:
+
+	Component(T item) { item = item; }
+	Component(T item, float parent) { item = item; parentID = parent; }
+
 	//need ref to component
 	T item;
 	// layer reference id
@@ -284,13 +296,43 @@ class Network_Fragment
 public:
 	//need a list of all differences between two networks
 	//and data to accompany the differences specifying where they fit
-	vector<Component<Block>> blocks;
-	vector<Component<Connection>> connections;
+	vector<Component<Block*>*> blocks;
+	vector<Component<Connection*>*> connections;
 	vector<Component<Layer<Block>>> layers;
 
-	void addLayer(Layer<Block>* l) {};
-	void addBlock(Block* b) {};
-	void addConnection(Connection* c) {};
+	void addLayer(Layer<Block>* l) 
+	{
+		//create new layer
+		Layer<Block>* copyLayer = new Layer<Block>();
+		//assign actual value
+		*copyLayer = *l;
+		//update references in layer contents
+
+	};
+	void addBlock(Block* b, Layer<Block>* parentL) 
+	{
+		//create new pointer to new block
+		Block* copyBlock = new Block();
+		//assign the new block the value of the parameter
+		*copyBlock = *b;
+		//create component that combines copyBLock with location info
+		blocks.push_back(new Component<Block*>(copyBlock, parentL->ID));
+	};
+	void addConnection(Connection* c, Layer<Block>* parentL) 
+	{
+		//need to update block references in connecion
+		Block* replacementOriginBlock = new Block(c->originBlock->population.size());
+		Block* replacementDestBlock = new Block(c->destinationBlock->population.size());
+
+		*replacementOriginBlock = *c->originBlock;
+		*replacementDestBlock = *c->destinationBlock;
+
+		//create new conneciton
+		Connection* copyConnection = new Connection(replacementDestBlock, replacementOriginBlock, c->strengthOfConnection);
+		
+		//create component that combines connection with location info
+		connections.push_back(new Component<Connection*>(copyConnection, parentL->ID));
+	};
 };
 
 
