@@ -220,6 +220,7 @@ template <typename T>
 class Layer
 {
 public:
+	float ID;
 
 	vector<T*> blocks;
 
@@ -265,11 +266,12 @@ public:
 	T item;
 	// layer reference id
 	// if T is a layer then this would be the layer immediately above T
-	_GUID parentID;
+	float parentID;
 	//references for the blocks if this is a connection, and connection is an edge case
-	_GUID originID;
-	_GUID destID;
+	float originID;
+	float destID;
 	//and wheather component links to existing network or is entirely in fragment
+	//basically is this component an ege case that requires splicing into existing network 
 	bool isEdge;
 };
 
