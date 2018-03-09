@@ -288,9 +288,9 @@ public:
 	vector<Component<Connection>> connections;
 	vector<Component<Layer<Block>>> layers;
 
-	/*void addLayer(Layer<Block>* l) {};
+	void addLayer(Layer<Block>* l) {};
 	void addBlock(Block* b) {};
-	void addConnection(Connection* c) {};*/
+	void addConnection(Connection* c) {};
 };
 
 
