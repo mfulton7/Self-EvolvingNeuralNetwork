@@ -33,6 +33,7 @@ public:
 class Block {
 
 public:
+	float ID;
 	//list of all neurons in a block
 	vector<Neuron*> population;
 
@@ -165,6 +166,8 @@ public:
 //need to create inherited connection subclass for input and output connections  
 class Connection {
 public:
+	float ID;
+
 	float strengthOfConnection;
 	Block* originBlock;
 	Block* destinationBlock;
@@ -284,6 +287,10 @@ public:
 	vector<Component<Block>> blocks;
 	vector<Component<Connection>> connections;
 	vector<Component<Layer<Block>>> layers;
+
+	/*void addLayer(Layer<Block>* l) {};
+	void addBlock(Block* b) {};
+	void addConnection(Connection* c) {};*/
 };
 
 
