@@ -298,16 +298,34 @@ public:
 	//and data to accompany the differences specifying where they fit
 	vector<Component<Block*>*> blocks;
 	vector<Component<Connection*>*> connections;
-	vector<Component<Layer<Block>>> layers;
+	//NOTE LAYERS ARE HANDLED DIFFERENTLY WHERE ONLY THE EXISTANCE IS CONTAINED IN THE FRAGMENT
+	//SO THIS TELLS YOU THAT THERE IS A LAYER BUT NOT WHATS IN IT
+	//TO POPULATE THE CONTENTS OF A LAYER WE USE THE BLOCKS AND CONNECTIONS VECTORS
+	vector<Component<Layer<Block>*>*> layers;
 
-	void addLayer(Layer<Block>* l) 
+	//todo investigate
+	//will this break if layer to left is input layer??
+	void addLayer(Layer<Block>* l, Layer<Block>* layerToLeft) 
 	{
 		//create new layer
 		Layer<Block>* copyLayer = new Layer<Block>();
+		
 		//assign actual value
-		*copyLayer = *l;
+		//SHOULDN'T BE NEED DUE TO NOTE?
+		//*copyLayer = *l;
+		
 		//update references in layer contents
+		//should this be copylayer or l?
+		for each (Block* b in copyLayer->blocks)
+		{
+			addBlock(b, copyLayer);
+		}
+		for each (Connection* c in copyLayer->connections)
+		{
+			addConnection(c, copyLayer);
+		}
 
+		layers.push_back(new Component<Layer<Block>*>(copyLayer, layerToLeft->ID));
 	};
 	void addBlock(Block* b, Layer<Block>* parentL) 
 	{

@@ -30,6 +30,7 @@ Network_Fragment operator - (Network const &left, Network const &right)
 					if (!matchedBlock)
 					{
 						// must add block to network fragment result
+						result.addBlock(lb, ll);
 					}
 				}
 				//in matched layer check all connections
@@ -44,19 +45,18 @@ Network_Fragment operator - (Network const &left, Network const &right)
 					if (!matchedConnection)
 					{
 						// must add connection to network fragment result
+						result.addConnection(lc, ll);
 					}
 				}
-			}
-			//no layer match found for this iteration
-			else
-			{
-
 			}
 		}
 		//if matched layer is stil false then no matches exist
 		if (!matchedLayer)
 		{
 			//add layer to fragment result
+			//todo
+			//need way to get left layer?
+			//result.addLayer(ll, )
 		}
 	}
 

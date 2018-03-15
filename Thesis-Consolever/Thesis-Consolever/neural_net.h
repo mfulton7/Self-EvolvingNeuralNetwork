@@ -304,9 +304,14 @@ public:
 	{
 		for (int i = connectionIndexStart; i < connectionIndexEnd; i++) 
 		{
+			//error for connection
 			calculateAndApplyErrorOfConnection(this->hiddenLayers[hlIndex]->connections[i], hlIndex);
 		}
+
 	}
+
+	//void calculateAndApplyErrorForNodePotential(Block* b, int )
+
 
 	void runBackwardsOnHiddenLayer(int hiddenLayerIndex) 
 	{
@@ -316,17 +321,25 @@ public:
 		//todo need to find way to catch remainder
 		int currentIndex = 0;
 		//spawn a thread to work on each connection in the current layer
-		/*for each (Connection* c in this->hiddenLayers[hiddenLayerIndex]->connections)
-		{
-			thread* worker = new thread(&Network::calculateAndApplyErrorOfConnection, this, c, hiddenLayerIndex);
-			threads.push_back(worker);
-		}*/
+		
 		while (threads.size() < THREAD_COUNT) 
 		{
 			thread* worker = new thread(&Network::calculateAndApplyConnectionErrorForRange, this, hiddenLayerIndex, currentIndex, (currentIndex + connectionsPerThread));
 			threads.push_back(worker);
 			currentIndex += connectionsPerThread;
 		}
+		//remainder catch
+		//used i.e. 5 connections with 2 threads
+		//above loop creates 2 threads with 2 connections each
+		//this if takes the remainder of 4/5 (1) and handles it in its own thread
+		if (this->hiddenLayers[hiddenLayerIndex]->connections.size() % THREAD_COUNT != 0) 
+		{
+			thread* worker = new thread(&Network::calculateAndApplyConnectionErrorForRange, this, hiddenLayerIndex, currentIndex, (this->hiddenLayers[hiddenLayerIndex]->connections.size()));
+			threads.push_back(worker);
+		}
+
+		//handle node back prop in a single thread since connections are significantly larger than node count
+		//todo
 		//wait for all threads to finish before exiting function
 		for each (thread* t in threads)
 		{
