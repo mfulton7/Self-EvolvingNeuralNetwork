@@ -190,7 +190,7 @@ public:
 
 	//ctors
 	//////////////////////////////////////
-	
+	Network();
 
 	//ctor for creating a basic network with x blocks of y size
 	//note this creates a chain configuration
