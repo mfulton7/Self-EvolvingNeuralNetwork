@@ -65,11 +65,11 @@ Network_Fragment operator - (Network const &left, Network const &right)
 
 //todo
 //combine a network fragment with an existing network
-Network operator + (Network_Fragment const &left, Network const &right)
-{
-
-	Network result;
-
-
-	return result;
-}
+//Network operator + (Network_Fragment const &left, Network const &right)
+//{
+//
+//	Network result;
+//
+//
+//	return result;
+//}

@@ -14,7 +14,7 @@
 #include "neural_components.h"
 
 //constant definition
-const static int THREAD_COUNT = 8;
+const static int THREAD_COUNT = 16;
 
 using std::vector;
 using std::thread;
@@ -389,7 +389,7 @@ public:
 	friend Network_Fragment operator - (Network const &left, Network const &right);
 
 	//takes a base network and adds a network fragment to its structure
-	friend Network operator + (Network_Fragment const &left, Network const &right);
+	//friend Network operator + (Network_Fragment const &left, Network const &right);
 
 	///////////////////////////////////
 };

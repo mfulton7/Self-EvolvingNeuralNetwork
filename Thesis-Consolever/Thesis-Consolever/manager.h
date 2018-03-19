@@ -10,7 +10,7 @@
 
 #include "neural_net.h"
 #include "data_handlers.h"
-
+#include "statistics_handler.h"
 
 
 
@@ -20,10 +20,13 @@ public:
 	std::vector<Network> neuralNets;
 	std::vector<DataPair<float, float>> testDataSet;
 	TestDataHandler dataHandler;
+	StatisticsHandler statsHandler;
+
 	Manager() {
 		//setup random
 		srand(time(NULL));
 		dataHandler = TestDataHandler(0);
+		statsHandler = StatisticsHandler(10);
 	};
 
 	//does all steps required to create a traditional network using algorithms 
@@ -53,24 +56,44 @@ public:
 		selectedNetwork->completeBackwardPass();
 		
 	};
-	// run x number of passes
-	void runPass(int passesToRun, Network* selectedNet)
+	
+	//return average error and total time to run pass
+	void runEpoch(Network* selectedNet)
 	{
+		//check if enough test data exists
+		if(testDataSet.size() < selectedNet->testRef)
+		{
+			//todo
+			//log this somehow
+			//generate moar data?
+			//probably replace this with try catch
+		}
+		int passesToRun = this->statsHandler.epoch_size;
 		float generationAverage = 0;
+		std::chrono::high_resolution_clock::time_point start = std::chrono::high_resolution_clock::now();
 		for (int i = 0; i < passesToRun; i++) 
 		{
-			std::chrono::high_resolution_clock::time_point start = std::chrono::high_resolution_clock::now();
-			runPass(selectedNet);
-			std::chrono::high_resolution_clock::time_point end = std::chrono::high_resolution_clock::now();
-			auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count();
-			std::cout << "A single pass takes " << duration << std::endl;
+			runPass(selectedNet);			
 			selectedNet->testRef++;
 			generationAverage += abs(selectedNet->totalError);
-			if (selectedNet->testRef % 100 == 0) {
-				std::cout << "Average Error for generation " << selectedNet->testRef / 100 <<" is " << generationAverage / 100 << std::endl;
-				generationAverage = 0;
-			}
 		}
+		generationAverage = generationAverage / passesToRun;
+		std::chrono::high_resolution_clock::time_point end = std::chrono::high_resolution_clock::now();
+		auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
+		
+		//save results into stats
+		this->statsHandler.run_time.push_back(duration);
+		this->statsHandler.average_error.push_back(generationAverage);
+	};
+
+	void runEpochs(Network* selectedNet, int numberofPasses)
+	{
+		for (int i = 0; i < numberofPasses; i++) 
+		{
+			runEpoch(selectedNet);
+		//mutate stuff??
+		}
+	
 	};
 };
 

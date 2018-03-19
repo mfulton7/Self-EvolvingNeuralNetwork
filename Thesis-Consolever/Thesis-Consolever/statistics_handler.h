@@ -2,13 +2,22 @@
 #define statistics_handler
 
 //used for gathering data on running networks and determining which networks are more efficient
-class statistics_handler 
+class StatisticsHandler 
 {
 public:
+	//epoch size is the number of passes run before comparison and mutation occurs
 	int epoch_size;
-	float run_time;
-	float average_error;
+	vector<std::chrono::milliseconds> run_time;
+	vector<float> average_error;
+			
+	StatisticsHandler() { epoch_size = 100; }
 
+	StatisticsHandler(int epochSize) 
+	{
+		epoch_size = epochSize;
+	}
+
+	
 };
 #endif // !statistics_handler
 
