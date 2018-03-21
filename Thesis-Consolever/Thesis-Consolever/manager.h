@@ -12,34 +12,45 @@
 #include "data_handlers.h"
 #include "statistics_handler.h"
 
-
+//struct to pair networks with the statshandler with the network
+struct netBundle 
+{
+	Network* neuralNet;
+	StatisticsHandler* statsHandler;
+};
 
 //governs execution and management of networks
 class Manager {
 public:
-	std::vector<Network> neuralNets;
+	std::vector<netBundle*> networks;
 	std::vector<DataPair<float, float>> testDataSet;
 	TestDataHandler dataHandler;
-	StatisticsHandler statsHandler;
+	
 
 	Manager() {
 		//setup random
 		srand(time(NULL));
 		dataHandler = TestDataHandler(0);
-		statsHandler = StatisticsHandler(10);
 	};
 
 	//does all steps required to create a traditional network using algorithms 
-	Network* spawnStandardNetwork(int layerC, int layerS) 
+	void spawnStandardNetwork(int layerC, int layerS) 
 	{
 		//create
 		Network* snet = new Network(layerC, layerS, 1);
 		//setup input and output specs
 		snet->initializeInputs(vector<std::string>{ "x" });
 		snet->initializeOutputs(vector<std::string>{"y"});
-		
 
-		return snet;
+		//setup stats
+		//each new network needs a stat tracker
+		StatisticsHandler* stats = new StatisticsHandler(10);
+
+		netBundle* result = new netBundle();
+		result->neuralNet = snet;
+		result->statsHandler = stats;
+
+		this->networks.push_back(result);
 	};
 
 	//fils the test data array 
@@ -53,40 +64,39 @@ public:
 		selectedNetwork->loadOutputs(testDataSet[selectedNetwork->testRef]);
 		selectedNetwork->completeForwardPass();
 		selectedNetwork->compareResults();
-		selectedNetwork->completeBackwardPass();
-		
+		selectedNetwork->completeBackwardPass();		
 	};
 	
 	//return average error and total time to run pass
-	void runEpoch(Network* selectedNet)
+	void runEpoch(netBundle* selectedNet)
 	{
 		//check if enough test data exists
-		if(testDataSet.size() < selectedNet->testRef)
+		if(testDataSet.size() < selectedNet->neuralNet->testRef)
 		{
 			//todo
 			//log this somehow
 			//generate moar data?
 			//probably replace this with try catch
 		}
-		int passesToRun = this->statsHandler.epoch_size;
+		int passesToRun = selectedNet->statsHandler->epoch_size;
 		float generationAverage = 0;
 		std::chrono::high_resolution_clock::time_point start = std::chrono::high_resolution_clock::now();
 		for (int i = 0; i < passesToRun; i++) 
 		{
-			runPass(selectedNet);			
-			selectedNet->testRef++;
-			generationAverage += abs(selectedNet->totalError);
+			runPass(selectedNet->neuralNet);			
+			selectedNet->neuralNet->testRef++;
+			generationAverage += abs(selectedNet->neuralNet->totalError);
 		}
 		generationAverage = generationAverage / passesToRun;
 		std::chrono::high_resolution_clock::time_point end = std::chrono::high_resolution_clock::now();
 		auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
 		
 		//save results into stats
-		this->statsHandler.run_time.push_back(duration);
-		this->statsHandler.average_error.push_back(generationAverage);
+		selectedNet->statsHandler->run_time.push_back(duration);
+		selectedNet->statsHandler->average_error.push_back(generationAverage);
 	};
 
-	void runEpochs(Network* selectedNet, int numberofPasses)
+	void runEpochs(netBundle* selectedNet, int numberofPasses)
 	{
 		for (int i = 0; i < numberofPasses; i++) 
 		{

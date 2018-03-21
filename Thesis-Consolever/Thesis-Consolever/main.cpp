@@ -27,9 +27,9 @@ int main() {
 	std::cout << "Hardware supports up to " << std::thread::hardware_concurrency() << std::endl;
 	Manager testManager;
 	testManager.populateTestDataList(1000);
-	Network* testNetworkA = testManager.spawnStandardNetwork(5, 40);
+	//Network* testNetworkA = testManager.spawnStandardNetwork(5, 40);
 
-	testManager.runEpochs(testNetworkA, 1);
+	//testManager.runEpochs(testNetworkA, 1);
 
 
 	system("PAUSE");

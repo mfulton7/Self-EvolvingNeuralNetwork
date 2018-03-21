@@ -29,6 +29,9 @@ public:
 
 };
 
+//forward declaration of class connection for the sake of block cache
+class Connection;
+
 //encapsulating all connections via blocks allows for fine neuron interactions and the ability to scale up easily
 class Block {
 
@@ -55,6 +58,10 @@ public:
 	//summed and quashed output of this block
 	float totalOutput;
 
+
+	//list of references to all connections that this block is a particpant in
+	vector<Connection*> inConnectionCache;
+	vector<Connection*> outConnectionCache;
 
 	//constructors
 	////////////////////////////////////////////////
@@ -175,13 +182,6 @@ public:
 	// total error of network with respect to this connection
 	float connectionError;
 
-	////////////////////
-	//will probably need cut?
-	float distanceBetweenBlock;
-	//3 dimensional vector representing direction to neuron
-	std::vector<float> angleOfConnection;
-	///////////////////
-
 
 	Connection() {
 		//create random weight between 0 and 1
@@ -200,15 +200,12 @@ public:
 		originBlock = origin;
 		//create random weight between 0 and 1
 		strengthOfConnection = str;
-	};
-	Connection(float dist, std::vector<float> angle, Block* dest, Block* origin) {
-		distanceBetweenBlock = dist;
-		angleOfConnection = angle;
-		strengthOfConnection = 1;
-		destinationBlock = dest;
-		originBlock = origin;
-	};
 
+		//update cache in blocks
+		dest->inConnectionCache.push_back(this);
+		origin->outConnectionCache.push_back(this);
+	};
+	
 	//function to send forward prop through connection
 	//input * str of connection + same for all other connections on dest block
 	//this must be called after totaloutput for a block is calculated
