@@ -1,6 +1,9 @@
 #ifndef statistics_handler
 #define statistics_handler
 
+#include<fstream>
+
+
 //used for gathering data on running networks and determining which networks are more efficient
 class StatisticsHandler 
 {

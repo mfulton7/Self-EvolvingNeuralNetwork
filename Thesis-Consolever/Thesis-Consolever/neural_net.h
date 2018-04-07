@@ -8,13 +8,13 @@
 #include <time.h>
 #include <chrono>
 #include <typeinfo>
-#include <thread>
+#include <thread> 
 
 #include "data_handlers.h"
 #include "neural_components.h"
 
 //constant definition
-const static int THREAD_COUNT = 16;
+const static int THREAD_COUNT = 4;
 
 using std::vector;
 using std::thread;

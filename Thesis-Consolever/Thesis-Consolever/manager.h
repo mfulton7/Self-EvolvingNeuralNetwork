@@ -7,6 +7,7 @@
 #include<time.h>
 #include<stdlib.h>
 #include<iostream>
+#include<fstream>
 
 #include "neural_net.h"
 #include "data_handlers.h"
@@ -17,6 +18,33 @@ struct netBundle
 {
 	Network* neuralNet;
 	StatisticsHandler* statsHandler;
+	std::ofstream out;
+	
+	netBundle(Network* n, StatisticsHandler* s, std::string archiveName) 
+	{
+		neuralNet = n;
+		statsHandler = s;
+		out.open(archiveName + ".txt");
+		out << "Archive File:" << std::endl;
+		out << "ID # " << this->neuralNet->branchID << std::endl;
+		
+	}
+
+	void logStats() 
+	{
+		out << "Epoch Size : " << statsHandler->epoch_size << std::endl;
+		out << "Latest Epoch Error : " << statsHandler->average_error.back() << std::endl;
+		out << "Latest Run Time : " << statsHandler->run_time.back().count() << std::endl;
+	}
+
+	void logTopography() 
+	{
+	}
+
+	void terminateConnection() 
+	{
+		out.close();
+	}
 };
 
 //governs execution and management of networks
@@ -46,9 +74,8 @@ public:
 		//each new network needs a stat tracker
 		StatisticsHandler* stats = new StatisticsHandler(10);
 
-		netBundle* result = new netBundle();
-		result->neuralNet = snet;
-		result->statsHandler = stats;
+		netBundle* result = new netBundle(snet, stats, "test");
+		
 
 		this->networks.push_back(result);
 	};
