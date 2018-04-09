@@ -26,11 +26,15 @@ int main() {
 	std::cout << "Using " << THREAD_COUNT << " threads." << std::endl;
 	std::cout << "Hardware supports up to " << std::thread::hardware_concurrency() << std::endl;
 	Manager testManager;
+	std::cout << "Populating test data.... " << std::endl;
 	testManager.populateTestDataList(1000);
-	testManager.spawnStandardNetwork(3, 10);
-
-	testManager.runEpochs(testManager.networks[0], 1);
+	std::cout << "Creating network ... " << std::endl;
+	testManager.spawnStandardNetwork(5, 40);
+	
+	std::cout << "Training..." << std::endl;
+	testManager.runEpochs(testManager.networks[0], 10);
 	testManager.networks[0]->logStats();
+	//testManager.networks[0]->logTopography();
 	testManager.networks[0]->terminateConnection();
 
 

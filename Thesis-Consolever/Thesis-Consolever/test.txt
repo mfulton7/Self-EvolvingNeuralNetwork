@@ -1,5 +1,2 @@
 Archive File:
-ID # 48
-Epoch Size : 10
-Latest Epoch Error : 0.00936462
-Latest Run Time : 24860
+ID # 71

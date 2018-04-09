@@ -12,9 +12,10 @@
 
 #include "data_handlers.h"
 #include "neural_components.h"
+#include <boost\serialization\vector.hpp>
 
 //constant definition
-const static int THREAD_COUNT = 4;
+const static int THREAD_COUNT = 16;
 
 using std::vector;
 using std::thread;
@@ -31,6 +32,13 @@ using std::thread;
 class Network {
 
 public:
+
+	template<class Archive>
+	void serialize(Archive & ar, const unsigned int version) 
+	{
+		ar & hiddenLayers;
+	}
+
 	//id
 	float branchID;
 
@@ -151,9 +159,18 @@ public:
 		// 1/2(target - output) ^ 2
 		for(int i = 0; i< correctOutputs.size(); i++)
 		{
-			float result = (correctOutputs[i] - outputs[i].blocks.front()->totalOutput);
+			float createdResult = outputs[i].blocks.front()->totalOutput;
+			float correctResult = correctOutputs[i];
+			float result = correctResult - createdResult;
+			//float result = (correctOutputs[i] - outputs[i].blocks.front()->totalOutput);
 			result = result * result;
 			result = result / 2;
+
+			//?? then add the derivative of fast sigmoid (net output)?
+			//not sure if this needs done given our squared error function
+			// derivative of 1/ 1 +x is x +1
+			//float uncrushedOut = outputs[i].blocks.front()->outputFromBlock + 1;
+			//result += uncrushedOut;
 			indErrorList.push_back(result);
 			totalResult += result;
 		}

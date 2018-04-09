@@ -6,11 +6,18 @@
 #include <ctime>
 #include <time.h>
 #include <chrono>
+#include <boost/serialization/vector.hpp>
+
 using std::vector;
 
 //indivual nodes inside of a block
 class Neuron {
 public:
+	template<class Archive>
+	void serialize(Archive & ar, const unsigned int version) 
+	{
+		ar & nodePotential;
+	}
 
 	//value of neuron
 	float nodePotential;
@@ -36,6 +43,15 @@ class Connection;
 class Block {
 
 public:
+
+	template<class Archive>
+	void serialize(Archive & ar, const unsigned int version) 
+	{
+		ar & population;
+		ar & inConnectionCache;
+		ar & outConnectionCache;
+	}
+
 	float ID;
 	//list of all neurons in a block
 	vector<Neuron*> population;
@@ -173,6 +189,15 @@ public:
 //need to create inherited connection subclass for input and output connections  
 class Connection {
 public:
+	
+	template<class Archive>
+	void serialize(Archive & ar, const unsigned int version) 
+	{
+		ar & strengthOfConnection;
+		ar & originBlock;
+		ar & destinationBlock;
+	}
+
 	float ID;
 
 	float strengthOfConnection;
@@ -228,6 +253,14 @@ template <typename T>
 class Layer
 {
 public:
+
+	template<class Archive>
+	void serialize(Archive & ar, const unsigned int version) 
+	{
+		ar & blocks;
+		ar & connections;
+	}
+
 	float ID;
 
 	vector<T*> blocks;

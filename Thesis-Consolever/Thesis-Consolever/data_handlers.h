@@ -2,6 +2,9 @@
 #define data_handlers
 
 #include <vector>
+#include <fstream>
+#include <iostream>
+#include <string>
 
 using std::vector;
 
@@ -32,14 +35,60 @@ public:
 
 	auto ReturnData(int dataSetSize)
 	{
+
+		vector <DataPair<float, float>> dataresult;
 		if (testMode == 0) {
 
-			vector <DataPair<float, float>> dataresult;
 			for (int i = 0; i < dataSetSize; i++) {
-				dataresult.push_back(SimpleEquationDataGeneration());
+				dataresult.push_back(ModerateEquationDataGeneration());
 			}
-			return dataresult;
+			
 		}
+
+		//test mode for stock data
+		if (testMode == 1) 
+		{
+			std::ifstream in;
+			in.open("AAPL_data.csv");
+			std::string date;
+			std::string openPrice;
+			std::string highPrice;
+			std::string lowPrice;
+			std::string closePrice;
+			std::string volume;
+			std::string name;
+			std::string headers;
+
+			//get rid of headers in csv file
+			//todo make headers the dynamic string names
+			//todo send this info to the names
+			//todo add date as a param???
+			std::getline(in, headers, '\n');
+
+			for (int i = 0; i < dataSetSize; i++) {
+				getline(in, date, ',');
+				std::getline(in, openPrice, ',');
+				std::getline(in, highPrice, ',');
+				std::getline(in, lowPrice, ',');
+				std::getline(in, closePrice, ',');
+				std::getline(in, volume, ',');
+				std::getline(in, name, '\n');
+				DataPair<float, float> newPair;
+				
+				newPair.input.push_back(std::stof(openPrice));
+				newPair.input.push_back(std::stof(highPrice));
+				newPair.input.push_back(std::stof(lowPrice));
+				
+				newPair.input.push_back(std::stof(volume));
+
+				//todo find result in the future?
+				newPair.output.push_back(std::stof(closePrice));
+				dataresult.push_back(newPair);
+			}
+
+
+		}
+		return dataresult;
 	};
 
 	DataPair<float, float> SimpleEquationDataGeneration()
@@ -56,6 +105,25 @@ public:
 		newPair.output.push_back(out);
 		return newPair;
 	};
+
+	DataPair<float, float> ModerateEquationDataGeneration() 
+	{
+		//equation
+		// y = x^3 + z^2 + 5
+		float inX = rand() % 2000;
+		inX - 1000;
+		float inZ = rand() & 2000;
+		inZ - 1000;
+
+		float out = (inX * inX * inX) + (inZ * inZ) + 5;
+
+		DataPair<float, float> newPair;
+		newPair.input.push_back(inX);
+		newPair.input.push_back(inZ);
+		newPair.output.push_back(out);
+		return newPair;
+	
+	}
 
 
 };

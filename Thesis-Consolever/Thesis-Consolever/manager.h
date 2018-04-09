@@ -12,6 +12,7 @@
 #include "neural_net.h"
 #include "data_handlers.h"
 #include "statistics_handler.h"
+#include<boost\archive\text_oarchive.hpp>
 
 //struct to pair networks with the statshandler with the network
 struct netBundle 
@@ -32,13 +33,34 @@ struct netBundle
 
 	void logStats() 
 	{
+		//todo set dataset stuff for logging
+		out << "Dataset : " << std::endl;
 		out << "Epoch Size : " << statsHandler->epoch_size << std::endl;
-		out << "Latest Epoch Error : " << statsHandler->average_error.back() << std::endl;
-		out << "Latest Run Time : " << statsHandler->run_time.back().count() << std::endl;
+		for (int k = 0; k < statsHandler->average_error.size(); k++) 
+		{
+			out << "Epoch " << k << " Error : " << statsHandler->average_error[k] << std::endl;
+			out << "Run Time " << k << " (ms) : " << statsHandler->run_time[k].count() << std::endl;
+			out << "---------------------------" << std::endl;
+
+		}
+		
+		
+		
+		int nodeCount = 0;
+		int connCount = 0;
+		for (int i = 0; i < neuralNet->hiddenLayers.size(); i++) 
+		{
+			nodeCount += neuralNet->hiddenLayers[i]->blocks.size();
+			connCount += neuralNet->hiddenLayers[i]->connections.size();
+		}
+		out << "Total Connection Count : " << connCount << std::endl;
+		out << "Total Node Count : " << nodeCount << std::endl;
 	}
 
 	void logTopography() 
 	{
+		boost::archive::text_oarchive a(out);
+		out << neuralNet;
 	}
 
 	void terminateConnection() 
@@ -58,7 +80,8 @@ public:
 	Manager() {
 		//setup random
 		srand(time(NULL));
-		dataHandler = TestDataHandler(0);
+		//set data type for experiments here
+		dataHandler = TestDataHandler(1);
 	};
 
 	//does all steps required to create a traditional network using algorithms 
@@ -67,8 +90,9 @@ public:
 		//create
 		Network* snet = new Network(layerC, layerS, 1);
 		//setup input and output specs
-		snet->initializeInputs(vector<std::string>{ "x" });
-		snet->initializeOutputs(vector<std::string>{"y"});
+		//todo make this dynamic and move it somewhere else probably to datahandlers or manager
+		snet->initializeInputs(vector<std::string>{ "open", "high", "low", "volume" });
+		snet->initializeOutputs(vector<std::string>{"close"});
 
 		//setup stats
 		//each new network needs a stat tracker
@@ -81,6 +105,7 @@ public:
 	};
 
 	//fils the test data array 
+	//todo add option for end of file reading
 	void populateTestDataList(int size) 
 	{
 		testDataSet = dataHandler.ReturnData(size);
@@ -128,6 +153,7 @@ public:
 		for (int i = 0; i < numberofPasses; i++) 
 		{
 			runEpoch(selectedNet);
+			std::cout << "Epoch " << i << " has been completed." << std::endl;
 		//mutate stuff??
 		}
 	
