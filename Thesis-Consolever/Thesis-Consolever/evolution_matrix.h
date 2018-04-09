@@ -54,11 +54,45 @@ class EvolutionMatrix {
 
 	//block injection
 	//0 - 1
-	void injectBlock(Network* n, bool splice) {};
+	void injectBlock(Network* n, bool splice) 
+	{
+		//don't have to worry about dataflow integrity as much when adding
+		int hiddenLayerChoice = rand() & n->hiddenLayers.size();
+
+		//create new block
+
+		//add it to hidden layer
+
+		//connect at least one backwards connection
+
+		//connect at least one forwards connection
+	};
 
 	//connection injection
 	//2
-	void injectConn(Network* n) {};
+	void injectConn(Network* n) 
+	{
+		//get two random numbers for hidden layers
+		//note numbers cannot be the same
+		int hiddenLayerChoice1 = rand() & n->hiddenLayers.size();
+		int hiddenLayerChoice2 = rand() & n->hiddenLayers.size();
+
+		//get two random numbers for nodes in chosen hidden layers
+		int nodeChoice1 = rand() & n->hiddenLayers[hiddenLayerChoice1]->blocks.size();
+		int nodeChoice2 = rand() & n->hiddenLayers[hiddenLayerChoice2]->blocks.size();
+
+		//compare connections cannot go backwards so the bigger of the two must hiddens must be found
+		if (hiddenLayerChoice1 < hiddenLayerChoice2) 
+		{
+			//create connection
+			//add it to hidden layers
+			//make sure blocks selected have updated caches
+		}
+		else 
+		{
+			//same code as above just flipped 1 and 2
+		}
+	};
 
 	//create a new block inside of a connection between two blocks
 	//effectively creating a new layer
@@ -66,7 +100,10 @@ class EvolutionMatrix {
 
 	//layer injection
 	//3
-	void injectLay(Network* n, int layerSize, bool splice) {};
+	void injectLay(Network* n, int layerSize, bool splice) 
+	{
+		//be lazy here and just add to the end?
+	};
 
 	//block deletion
 	//3
