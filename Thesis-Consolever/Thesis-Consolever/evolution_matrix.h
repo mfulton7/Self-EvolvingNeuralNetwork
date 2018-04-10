@@ -72,26 +72,62 @@ class EvolutionMatrix {
 	//2
 	void injectConn(Network* n) 
 	{
+		bool isOutputConn = false;
+		bool isInputConn = false;
+		
+		Connection* injection = new Connection();
+		
 		//get two random numbers for hidden layers
 		//note numbers cannot be the same
-		int hiddenLayerChoice1 = rand() & n->hiddenLayers.size();
-		int hiddenLayerChoice2 = rand() & n->hiddenLayers.size();
-
+		//need some functionality to hit output layer
+		int hiddenLayerChoice1 = (rand() & n->hiddenLayers.size()) - 1;
+		int hiddenLayerChoice2 = (rand() & n->hiddenLayers.size() + 1) + hiddenLayerChoice1;
 		//get two random numbers for nodes in chosen hidden layers
 		int nodeChoice1 = rand() & n->hiddenLayers[hiddenLayerChoice1]->blocks.size();
 		int nodeChoice2 = rand() & n->hiddenLayers[hiddenLayerChoice2]->blocks.size();
 
-		//compare connections cannot go backwards so the bigger of the two must hiddens must be found
-		if (hiddenLayerChoice1 < hiddenLayerChoice2) 
+		// if the origin is in the input layer
+		if(hiddenLayerChoice1 == -1)
 		{
-			//create connection
-			//add it to hidden layers
-			//make sure blocks selected have updated caches
+			isInputConn = true;
+			nodeChoice1 = rand() & n->inputs->blocks.size();
+			injection->addOrigin(n->inputs->blocks[nodeChoice1]);
+
+			//add pointer to connection to inputs
+			n->inputs->addConnection(injection);
+				
 		}
 		else 
 		{
-			//same code as above just flipped 1 and 2
+			injection->addOrigin(n->hiddenLayers[hiddenLayerChoice1]->blocks[nodeChoice1]);
+			//add pointer to connection to starting hidden layer
+			n->hiddenLayers[hiddenLayerChoice1]->addConnection(injection);
 		}
+
+		// if the dest is in the output layer
+		if (hiddenLayerChoice2 == n->hiddenLayers.size() + 1)
+		{
+			isOutputConn = true;
+			nodeChoice2 = rand() & n->outputs->blocks.size();
+			injection->addDest(n->outputs->blocks[nodeChoice2]);
+		}
+		else 
+		{
+			injection->addDest(n->hiddenLayers[hiddenLayerChoice2]->blocks[nodeChoice2]);
+		}
+
+		
+		
+		//create connection
+		//add it to origin layer
+		//update caches of blocks
+			
+
+	
+
+		
+
+		
 	};
 
 	//create a new block inside of a connection between two blocks
@@ -161,19 +197,24 @@ class EvolutionMatrix {
 
 	//connection deletion
 	//4
-	void rmConn(Network* n) {};
+	void rmConn(Network* n) 
+	{
+		//similar to add with pickiing a connection
+
+		//need to find a way to make sure data integrity is kept though
+	
+	};
 
 	//layer deletion
 	//5
-	void rmLay(Network* n) {};
+	void rmLay(Network* n) 
+	{
+		//if hidden layers size is greater then one
 
-	//block adjustment
-	//6
-	void adjBlock(Network* n) {};
+		//random vs full spilcing?
+	};
 
-	//layer adjustment
-	//7
-	void adjLay(Network* n) {};
+
 	////////////////////////////////////////////////////
 
 	//

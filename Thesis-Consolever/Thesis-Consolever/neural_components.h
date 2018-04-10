@@ -231,6 +231,18 @@ public:
 		origin->outConnectionCache.push_back(this);
 	};
 	
+	void addDest(Block* dest) 
+	{
+		destinationBlock = dest;
+		dest->inConnectionCache.push_back(this);
+	};
+
+	void addOrigin(Block* origin)
+	{
+		originBlock = origin;
+		origin->outConnectionCache.push_back(this);
+	}
+
 	//function to send forward prop through connection
 	//input * str of connection + same for all other connections on dest block
 	//this must be called after totaloutput for a block is calculated
