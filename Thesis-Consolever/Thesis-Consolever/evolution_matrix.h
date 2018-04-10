@@ -59,13 +59,38 @@ class EvolutionMatrix {
 		//don't have to worry about dataflow integrity as much when adding
 		int hiddenLayerChoice = rand() & n->hiddenLayers.size();
 
-		//create new block
-
+		
 		//add it to hidden layer
+		n->hiddenLayers[hiddenLayerChoice]->addBlock(1);
+		
+		int oNode, dNode = 0;
 
 		//connect at least one backwards connection
+		//if its the first hidden then the backwards must be to inputs
+		if (hiddenLayerChoice == 0) 
+		{
+			oNode = rand() & n->inputs->blocks.size();
+			n->inputs->addConnection(new Connection(n->hiddenLayers[hiddenLayerChoice]->blocks.back(), n->inputs->blocks[oNode]));
+		}
+		else 
+		{
+			oNode = rand() & n->hiddenLayers[hiddenLayerChoice - 1]->blocks.size();
+			
+			n->hiddenLayers[hiddenLayerChoice - 1]->addConnection(new Connection(n->hiddenLayers[hiddenLayerChoice]->blocks.back(), n->hiddenLayers[hiddenLayerChoice - 1]->blocks[oNode]));
+		}
 
 		//connect at least one forwards connection
+		//if its the last hidden layer then the forwards must be an output
+		if (hiddenLayerChoice == n->hiddenLayers.size()) 
+		{
+			dNode = rand() & n->outputs->blocks.size();
+			n->hiddenLayers.back()->addConnection(new Connection(n->outputs->blocks[dNode], n->hiddenLayers.back()->blocks.back()));
+		}
+		else
+		{
+			dNode = rand() & n->hiddenLayers[hiddenLayerChoice + 1]->blocks.size();
+			n->hiddenLayers[hiddenLayerChoice]->addConnection(new Connection(n->hiddenLayers[hiddenLayerChoice + 1]->blocks[dNode], n->hiddenLayers[hiddenLayerChoice]->blocks.back()));
+		}
 	};
 
 	//connection injection
@@ -117,15 +142,7 @@ class EvolutionMatrix {
 		}
 
 		
-		
-		//create connection
-		//add it to origin layer
-		//update caches of blocks
 			
-
-	
-
-		
 
 		
 	};
