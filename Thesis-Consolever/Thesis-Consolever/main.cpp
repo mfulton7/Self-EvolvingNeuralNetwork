@@ -32,7 +32,7 @@ int main() {
 	testManager.spawnStandardNetwork(5, 40);
 	
 	std::cout << "Training..." << std::endl;
-	testManager.runEpochs(testManager.networks[0], 10);
+	testManager.runEpochs(10);
 	testManager.networks[0]->logStats();
 	//testManager.networks[0]->logTopography();
 	testManager.networks[0]->terminateConnection();

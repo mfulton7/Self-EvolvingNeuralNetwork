@@ -7,37 +7,62 @@
 //handles algorithms and parameters for neurevolution
 class EvolutionMatrix {
 
+public:
+
+
+
 	//method to create new branch
-	void Mutate(Network* n, int mutationType) 
+	void Mutate(Network* n, int evolutionType) 
 	{
+		int mutationType;
+		int numberOfAvailableMutations = 6;
+		//determine how the mutation is selected
+		switch(evolutionType)
+		{
+		default:
+			break;
+		//random
+		case 0:
+			mutationType = rand() & numberOfAvailableMutations;
+			break;
+		//weights
+		case 1:
+			//create a struct to hold weights for the effectiveness of each mutation type
+			break;
+		}
+
+		//call the function for the mutation selected
 		switch (mutationType)
 		{
 		default:
 			break;
 
 		case 0:
-			injectBlock(n, false);
+			injectBlock(n);
 			break;
 
 		case 1:
-			injectBlock(n, true);
-			break;
-
-		case 2:
 			injectConn(n);
 			break;
 
-		case 3:
+		case 2:
 			injectLay(n, 10, true);
 			break;
 
+		case 3:
+			rmBlock(n);
+			break;
+
 		case 4:
+			rmConn(n);
 			break;
 
 		case 5:
+			rmLay(n);
 			break;
 
 		case 6:
+			bisectConn(n);
 			break;
 
 
@@ -51,10 +76,11 @@ class EvolutionMatrix {
 	//note splice parameter references wheather an injected object should be fully connected
 	//to surrounding objects or only randomly connected
 
+	
 
 	//block injection
 	//0 - 1
-	void injectBlock(Network* n, bool splice) 
+	void injectBlock(Network* n) 
 	{
 		//don't have to worry about dataflow integrity as much when adding
 		int hiddenLayerChoice = rand() & n->hiddenLayers.size();
@@ -97,6 +123,8 @@ class EvolutionMatrix {
 	//2
 	void injectConn(Network* n) 
 	{
+		//todo find way to stop multiple connections between two nodes
+
 		bool isOutputConn = false;
 		bool isInputConn = false;
 		
