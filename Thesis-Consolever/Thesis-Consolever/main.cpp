@@ -25,11 +25,20 @@ int main() {
 	std::cout << "Hello world" << std::endl;
 	std::cout << "Using " << THREAD_COUNT << " threads." << std::endl;
 	std::cout << "Hardware supports up to " << std::thread::hardware_concurrency() << std::endl;
-	Manager testManager;
+	std::cout << "Please select data type for testing....." << std::endl;
+	std::cout << "0 -> Simple Equation\n 1 -> Moderate Equation\n 2 -> Cosine\n 3 -> Stock Market" << std::endl;
+	int dataID;
+	std::cin >> dataID;
+
+	Manager testManager(dataID);
 	std::cout << "Populating test data.... " << std::endl;
 	testManager.populateTestDataList(1000);
 	std::cout << "Creating network ... " << std::endl;
 	testManager.spawnStandardNetwork(5, 40);
+	testManager.spawnEvolvedNetwork(3, 3);
+
+	//sets up input labels for current data type
+	testManager.initializeIO();
 	
 	std::cout << "Training..." << std::endl;
 	testManager.runEpochs(10);

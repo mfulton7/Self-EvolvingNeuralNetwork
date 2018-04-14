@@ -94,12 +94,43 @@ public:
 	float sizeWeight = 1.0f;
 	
 
-	Manager() {
+	Manager(int dataType) {
 		//setup random
 		srand(time(NULL));
 		//set data type for experiments here
-		dataHandler = TestDataHandler(1);
+		dataHandler = TestDataHandler(dataType);
 	};
+
+	void initializeIO() 
+	{
+		vector<std::string> inputList;
+		vector<std::string> outputList;
+
+		//simple equation and cosine are both x,y
+		if (this->dataHandler.testMode == 0 || this->dataHandler.testMode == 2)
+		{
+			inputList = { "X" };
+			outputList = { "Y" };
+		}
+
+		if (this->dataHandler.testMode == 1) 
+		{
+			inputList = { "X", "Z" };
+			outputList = { "Y" };
+		}
+
+		if (this->dataHandler.testMode == 3) 
+		{
+			inputList = { "open", "high", "low", "volume" };
+			outputList = { "close" };
+		}
+
+		for each (netBundle* b in this->networks)
+		{
+			b->neuralNet->initializeInputs(inputList);
+			b->neuralNet->initializeOutputs(outputList);
+		}
+	}
 
 	//does all steps required to create a traditional network using algorithms 
 	void spawnStandardNetwork(int layerC, int layerS) 
@@ -108,18 +139,39 @@ public:
 		Network* snet = new Network(layerC, layerS, 1);
 		//setup input and output specs
 		//todo make this dynamic and move it somewhere else probably to datahandlers or manager
-		snet->initializeInputs(vector<std::string>{ "open", "high", "low", "volume" });
-		snet->initializeOutputs(vector<std::string>{"close"});
+		//snet->initializeInputs(vector<std::string>{ "open", "high", "low", "volume" });
+		//snet->initializeOutputs(vector<std::string>{"close"});
 
 		//setup stats
 		//each new network needs a stat tracker
-		StatisticsHandler* stats = new StatisticsHandler(10);
+		StatisticsHandler* stats = new StatisticsHandler(EPOCH_SIZE);
 
-		netBundle* result = new netBundle(snet, stats, "test", false);
+		std::string archiveName = "test" + layerC + 'x' + layerS;
+		netBundle* result = new netBundle(snet, stats, archiveName, false);
 		
 
 		this->networks.push_back(result);
 	};
+
+	//does all steps to create a enn
+	void spawnEvolvedNetwork(int layerC, int layerS)
+	{
+		//create
+		Network* snet = new Network(layerC, layerS, 1);
+
+		//setup inputs???
+
+		
+		//setup stats
+		//each new network needs a stat tracker
+		StatisticsHandler* stats = new StatisticsHandler(EPOCH_SIZE);
+
+		netBundle* result = new netBundle(snet, stats, "evolved", true);
+
+
+		this->networks.push_back(result);
+	};
+
 
 	//fils the test data array 
 	//todo add option for end of file reading
@@ -197,7 +249,8 @@ public:
 	//does not prune non mutable networks since those are assumed to be comparison networks
 	void pruneNetworkVector() 
 	{
-		netBundle* currentLeader;
+		//initializion only
+		netBundle* currentLeader = this->networks[0];
 		std::vector<netBundle*> comparisonCache;
 		for each (netBundle* bundle in this->networks)
 		{
@@ -211,6 +264,7 @@ public:
 			float evaluation = 0.0f;
 			//todo implement size weights that benefit smaller networks
 			//evaluation = (bundle->statsHandler->average_error.back * accuracyWeight);
+			
 			if (currentLeader->statsHandler->average_error > bundle->statsHandler->average_error) 
 			{
 				currentLeader = bundle;

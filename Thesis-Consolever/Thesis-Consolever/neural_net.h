@@ -16,6 +16,7 @@
 
 //constant definition
 const static int THREAD_COUNT = 16;
+const static int EPOCH_SIZE = 10;
 
 using std::vector;
 using std::thread;

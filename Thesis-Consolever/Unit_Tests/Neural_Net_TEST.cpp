@@ -91,10 +91,10 @@ namespace Unit_Tests
 			{
 				//last layer will have no connections in this case
 				//fix later when adding testing with output layer
-				if (l == testNetwork.hiddenLayers.back()) 
+				/*if (l == testNetwork.hiddenLayers.back()) 
 				{
 					continue;
-				};
+				};*/
 				Assert::AreEqual(int(l->connections.size()), 100);
 			}
 			

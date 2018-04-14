@@ -228,7 +228,8 @@ public:
 		for each (Connection* c in inBuffer)
 		{
 			//find the pointer in the hidden layers
-			std::find(n->hiddenLayers.begin(), n->hiddenLayers.end(), c);
+			//todo this breaks xutility find out why and fixxx
+			//std::find(n->hiddenLayers.begin(), n->hiddenLayers.end(), c);
 		}
 		for each (Connection* c in outBuffer)
 		{

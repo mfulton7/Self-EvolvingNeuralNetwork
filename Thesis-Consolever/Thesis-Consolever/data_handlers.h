@@ -37,16 +37,29 @@ public:
 	{
 
 		vector <DataPair<float, float>> dataresult;
+
+		//test mode for simple equation
 		if (testMode == 0) {
 
 			for (int i = 0; i < dataSetSize; i++) {
-				dataresult.push_back(ModerateEquationDataGeneration());
+				dataresult.push_back(SimpleEquationDataGeneration());
 			}
 			
 		}
 
+		//test mode for moderate equation
+		if (testMode == 1) {
+
+			for (int i = 0; i < dataSetSize; i++) {
+				dataresult.push_back(ModerateEquationDataGeneration());
+			}
+
+		}
+		//test mode for cosine
+		//todo
+
 		//test mode for stock data
-		if (testMode == 1) 
+		if (testMode == 3) 
 		{
 			std::ifstream in;
 			in.open("AAPL_data.csv");

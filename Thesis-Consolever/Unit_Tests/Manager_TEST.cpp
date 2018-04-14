@@ -12,7 +12,7 @@ namespace Unit_Tests
 	{
 		TEST_METHOD(Check_Run_Pass) 
 		{
-			Manager testManager;
+			Manager testManager(1);
 			//Network* testNetworkA = testManager.spawnStandardNetwork();
 
 			//testManager.runPass(testNetworkA);
