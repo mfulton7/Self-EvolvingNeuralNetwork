@@ -251,13 +251,52 @@ public:
 		//leaving AB AC
 		for each (Connection* c in inBuffer)
 		{
+			
 			//find the pointer in the hidden layers
 			//todo this breaks xutility find out why and fixxx
-			//std::find(n->hiddenLayers.begin(), n->hiddenLayers.end(), c);
+			for (int i = 0; i < n->hiddenLayers.size(); i++) 
+			{
+				for (int j = 0; j < n->hiddenLayers[i]->connections.size(); j++) 
+				{
+					if (n->hiddenLayers[i]->connections[j] == c) 
+					{
+						//matched
+						n->hiddenLayers[i]->connections.erase(n->hiddenLayers[i]->connections.begin() + j);
+					}
+				}				
+			}
+
+			for (int k = 0; k < n->inputs->connections.size(); k++)
+			{
+				if (n->inputs->connections[k] == c) 
+				{
+					n->inputs->connections.erase(n->inputs->connections.begin() + k);
+				}
+			}
+
+			
 		}
 		for each (Connection* c in outBuffer)
 		{
+			for (int i = 0; i < n->hiddenLayers.size(); i++)
+			{
+				for (int j = 0; j < n->hiddenLayers[i]->connections.size(); j++)
+				{
+					if (n->hiddenLayers[i]->connections[j] == c)
+					{
+						//matched
+						n->hiddenLayers[i]->connections.erase(n->hiddenLayers[i]->connections.begin() + j);
+					}
+				}
+			}
 
+			for (int k = 0; k < n->outputs->connections.size(); k++)
+			{
+				if (n->outputs->connections[k] == c)
+				{
+					n->outputs->connections.erase(n->outputs->connections.begin() + k);
+				}
+			}
 		}
 
 

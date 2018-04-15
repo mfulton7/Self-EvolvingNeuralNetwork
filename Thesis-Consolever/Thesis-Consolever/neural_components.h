@@ -218,6 +218,9 @@ public:
 		originBlock = origin;
 		//create random weight between 0 and 1
 		strengthOfConnection = ((float)rand() / RAND_MAX);
+		//update cache in blocks
+		dest->inConnectionCache.push_back(this);
+		origin->outConnectionCache.push_back(this);
 	};
 	Connection(Block* dest, Block* origin, float str) 
 	{

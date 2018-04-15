@@ -64,6 +64,7 @@ namespace Unit_Tests
 			//update size
 			m.networks.front()->calculateSize();
 			Assert::AreEqual(8, m.networks.front()->nodeCount);
+			Assert::AreNotEqual(27, m.networks.front()->connCount);
 		}
 		
 		TEST_METHOD(Check_Connection_Removal)
