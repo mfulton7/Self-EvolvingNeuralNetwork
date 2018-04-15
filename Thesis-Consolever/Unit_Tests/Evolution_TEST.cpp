@@ -46,7 +46,36 @@ namespace Unit_Tests
 
 		TEST_METHOD(Check_Layer_Injection) 
 		{
-			
+			Manager m = SetupTestEnvironment();
+			//todo variablize the ten param
+			m.networks.front()->evoHandler->injectLay(m.networks.front()->neuralNet, 10);
+
+			//update size
+			m.networks.front()->calculateSize();
+			Assert::AreEqual(4, (int)m.networks.front()->neuralNet->hiddenLayers.size());
 		}
+
+		TEST_METHOD(Check_Block_Removal)
+		{
+			Manager m = SetupTestEnvironment();
+			
+			m.networks.front()->evoHandler->rmBlock(m.networks.front()->neuralNet);
+
+			//update size
+			m.networks.front()->calculateSize();
+			Assert::AreEqual(8, m.networks.front()->nodeCount);
+		}
+		
+		TEST_METHOD(Check_Connection_Removal)
+		{
+			Manager m = SetupTestEnvironment();
+			//todo variablize the ten param
+			m.networks.front()->evoHandler->rmConn(m.networks.front()->neuralNet);
+
+			//update size
+			m.networks.front()->calculateSize();
+			Assert::AreEqual(26, m.networks.front()->connCount);
+		}
+
 	};
 }

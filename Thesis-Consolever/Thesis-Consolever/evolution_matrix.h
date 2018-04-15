@@ -46,7 +46,7 @@ public:
 			break;
 
 		case 2:
-			injectLay(n, 10, true);
+			injectLay(n, 10);
 			break;
 
 		case 3:
@@ -183,10 +183,31 @@ public:
 	void bisectConn(Network* n) {};
 
 	//layer injection
+	//creates a layer of x nodes then connects each node once forwards and once backwards
 	//3
-	void injectLay(Network* n, int layerSize, bool splice) 
+	void injectLay(Network* n, int layerSize) 
 	{
 		//be lazy here and just add to the end?
+		Layer<Block> * newLayer = new Layer<Block>(layerSize, 1);
+		n->hiddenLayers.push_back(newLayer);
+
+		//now do connections backwards
+		for each (Block* o in n->hiddenLayers[n->hiddenLayers.size() - 2]->blocks)
+		{
+			//pick random destination
+			int dest = rand() & n->hiddenLayers.back()->blocks.size() -1;
+			Block* d = n->hiddenLayers.back()->blocks[dest];
+			n->hiddenLayers[n->hiddenLayers.size() - 2]->addConnection(new Connection(d, o));
+		}
+
+		//connections forwards
+		for each (Block* o in n->hiddenLayers.back()->blocks)
+		{
+			//pick random dest in output
+			int dest = rand() & n->outputs->blocks.size() -1;
+			Block* d = n->outputs->blocks[dest];
+			n->hiddenLayers.back()->addConnection(new Connection(d, o));
+		}
 	};
 
 	//block deletion
