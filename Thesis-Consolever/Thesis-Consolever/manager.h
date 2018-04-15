@@ -23,6 +23,23 @@ struct netBundle
 	EvolutionMatrix* evoHandler;
 	bool canMutate = false;
 
+	int nodeCount = 0;
+	int connCount = 0;
+
+	void calculateSize()
+	{
+		for (int i = 0; i < neuralNet->hiddenLayers.size(); i++)
+		{
+			nodeCount += neuralNet->hiddenLayers[i]->blocks.size();
+			connCount += neuralNet->hiddenLayers[i]->connections.size();
+		}
+
+		//grab input connections
+		connCount += neuralNet->inputs->connections.size();
+	
+	}
+	
+
 	std::ofstream out;
 	
 	netBundle(Network* n, StatisticsHandler* s, std::string archiveName, bool mutationFlag) 
@@ -43,7 +60,7 @@ struct netBundle
 	void logStats() 
 	{
 		//todo set dataset stuff for logging
-		out << "Dataset : " << std::endl;
+		out << "Dataset : " <<  std::endl;
 		out << "Epoch Size : " << statsHandler->epoch_size << std::endl;
 		for (int k = 0; k < statsHandler->average_error.size(); k++) 
 		{
@@ -55,13 +72,7 @@ struct netBundle
 		
 		
 		
-		int nodeCount = 0;
-		int connCount = 0;
-		for (int i = 0; i < neuralNet->hiddenLayers.size(); i++) 
-		{
-			nodeCount += neuralNet->hiddenLayers[i]->blocks.size();
-			connCount += neuralNet->hiddenLayers[i]->connections.size();
-		}
+		calculateSize();
 		out << "Total Connection Count : " << connCount << std::endl;
 		out << "Total Node Count : " << nodeCount << std::endl;
 	}

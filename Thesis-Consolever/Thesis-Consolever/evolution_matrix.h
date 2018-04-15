@@ -134,10 +134,11 @@ public:
 		//note numbers cannot be the same
 		//need some functionality to hit output layer
 		int hiddenLayerChoice1 = (rand() & n->hiddenLayers.size()) - 1;
-		int hiddenLayerChoice2 = (rand() & n->hiddenLayers.size() + 1) + hiddenLayerChoice1;
+		int diff = n->hiddenLayers.size() - (hiddenLayerChoice1);
+		int hiddenLayerChoice2 = (rand() & diff) + hiddenLayerChoice1;
 		//get two random numbers for nodes in chosen hidden layers
-		int nodeChoice1 = rand() & n->hiddenLayers[hiddenLayerChoice1]->blocks.size();
-		int nodeChoice2 = rand() & n->hiddenLayers[hiddenLayerChoice2]->blocks.size();
+		int nodeChoice1;
+		int nodeChoice2;
 
 		// if the origin is in the input layer
 		if(hiddenLayerChoice1 == -1)
@@ -152,20 +153,22 @@ public:
 		}
 		else 
 		{
+			nodeChoice1 = rand() & n->hiddenLayers[hiddenLayerChoice1]->blocks.size() - 1;
 			injection->addOrigin(n->hiddenLayers[hiddenLayerChoice1]->blocks[nodeChoice1]);
 			//add pointer to connection to starting hidden layer
 			n->hiddenLayers[hiddenLayerChoice1]->addConnection(injection);
 		}
 
 		// if the dest is in the output layer
-		if (hiddenLayerChoice2 == n->hiddenLayers.size() + 1)
+		if (hiddenLayerChoice2 == n->hiddenLayers.size())
 		{
 			isOutputConn = true;
-			nodeChoice2 = rand() & n->outputs->blocks.size();
+			nodeChoice2 = rand() & n->outputs->blocks.size() - 1;
 			injection->addDest(n->outputs->blocks[nodeChoice2]);
 		}
 		else 
 		{
+			nodeChoice2 = rand() & n->hiddenLayers[hiddenLayerChoice2]->blocks.size();
 			injection->addDest(n->hiddenLayers[hiddenLayerChoice2]->blocks[nodeChoice2]);
 		}
 
