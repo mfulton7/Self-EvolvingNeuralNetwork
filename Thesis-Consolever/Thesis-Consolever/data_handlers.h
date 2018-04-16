@@ -57,6 +57,13 @@ public:
 		}
 		//test mode for cosine
 		//todo
+		if (testMode == 2) 
+		{
+			for (int i = 0; i < dataSetSize; i++) {
+				dataresult.push_back(ModerateEquationDataGeneration());
+			}
+		
+		}
 
 		//test mode for stock data
 		if (testMode == 3) 
@@ -133,6 +140,21 @@ public:
 		DataPair<float, float> newPair;
 		newPair.input.push_back(inX);
 		newPair.input.push_back(inZ);
+		newPair.output.push_back(out);
+		return newPair;
+	
+	}
+
+	DataPair<float, float> CosEquationDataGeneration() 
+	{
+		//equation 
+		// y = cos(x)
+		float inX = rand() % 2000;
+		inX - 1000;
+
+		float out = cos(inX);
+		DataPair<float, float> newPair;
+		newPair.input.push_back(inX);
 		newPair.output.push_back(out);
 		return newPair;
 	

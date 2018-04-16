@@ -308,9 +308,46 @@ public:
 	//4
 	void rmConn(Network* n) 
 	{
+		//this puts us in datapath breaking situations with iO
+		//but do we want this?
+		if (n->hiddenLayers.size() <= 2) 
+		{
+			//log this
+			return;
+		
+		}
+		
 		//similar to add with pickiing a connection
+		//select random element
+		int layerNum = rand() % (n->hiddenLayers.size());
+		//lazy fix for input
+		if (layerNum == 0) { layerNum++; }
+		//lazy fix for output
+		if (layerNum == (n->hiddenLayers.size() - 1)) { layerNum--; }
+		int connNum = rand() & n->hiddenLayers[layerNum]->connections.size();
+
+		
+		//check if random has data flow
+		//given
+		// A -> B
+		//and we want to rm AB
+		//check that A has connection out other than AB
+		//check that B has connections in other than AB
+		auto selectedConn = n->hiddenLayers[layerNum]->connections[connNum];
+
+		if (selectedConn->originBlock->inConnectionCache.size() > 1 && selectedConn->destinationBlock->inConnectionCache.size() > 1)
+		{
+			//erase connection from connections in hidden layers
+			//erase connection from block connection caches
+		}
+		else
+		{
+			//pick new conn
+		}
+
 
 		//need to find a way to make sure data integrity is kept though
+
 	
 	};
 
