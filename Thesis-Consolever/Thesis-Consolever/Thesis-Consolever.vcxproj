@@ -150,6 +150,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="manager.cpp" />
     <ClCompile Include="neural_net.cpp" />
   </ItemGroup>
   <ItemGroup>

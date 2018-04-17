@@ -50,19 +50,7 @@ public:
 	float outputRatio = 1.0f;
 
 	//copy constructor
-	Network(const Network &obj)
-	{
-		inputs = new Layer<IO_Block>;
-		*inputs = *obj.inputs;
-		outputs = new Layer<IO_Block>;
-		*outputs = *obj.outputs;
-		testRef = obj.testRef;
-		for (int i = 0; i < obj.hiddenLayers.size(); i++) 
-		{
-			hiddenLayers.push_back(new Layer<Block>);
-			*hiddenLayers[i] = *obj.hiddenLayers[i];
-		}
-	};
+	Network& operator = (const Network &obj);
 
 	//inputs to network
 	Layer<IO_Block>* inputs;
@@ -254,7 +242,10 @@ public:
 
 	//ctors
 	//////////////////////////////////////
-	Network();
+	Network() 
+	{
+		branchID = rand() % 100;
+	}
 
 	
 

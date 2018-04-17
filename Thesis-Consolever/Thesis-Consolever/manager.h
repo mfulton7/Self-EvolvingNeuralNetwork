@@ -42,6 +42,11 @@ struct netBundle
 
 	std::ofstream out;
 	
+	netBundle() 
+	{
+		canMutate = false;
+	}
+
 	netBundle(Network* n, StatisticsHandler* s, std::string archiveName, bool mutationFlag) 
 	{
 		neuralNet = n;
@@ -54,14 +59,9 @@ struct netBundle
 	}
 
 	//copy constructor
-	netBundle(const netBundle &obj) 
-	{
-		canMutate = obj.canMutate;
-		neuralNet = new Network();
-		*neuralNet = *obj.neuralNet;
-		//keep stats handler since only one version of the same network when logging stats
+	netBundle& netBundle::operator=(const netBundle &obj);
 
-	}
+	
 
 	
 	
@@ -300,12 +300,17 @@ public:
 				if (n->canMutate) 
 				{
 					//call mutation stuff
-					//todo make a copy before mutation
-					//todo pretty sure this needs a copy constructor
-					//netBundle copy = *networks[0];
+					//make 6 copies
+					for (int i = 0; i < 6; i++) 
+					{
+						netBundle* cn = new netBundle();
+						*cn = *n;
+						cn->evoHandler->Mutate(cn->neuralNet, i);
+						this->networks.push_back(cn);
+					}
 					//then mutate one of the copies
 					
-					n->evoHandler->Mutate(n->neuralNet, 0);
+					//n->evoHandler->Mutate(n->neuralNet, 0);
 					//function that does all mutations and then compares them?
 				}
 			}

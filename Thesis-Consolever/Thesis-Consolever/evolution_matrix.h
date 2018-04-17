@@ -9,7 +9,7 @@ class EvolutionMatrix {
 
 public:
 
-
+	
 
 	//method to create new branch
 	void Mutate(Network* n, int evolutionType) 
@@ -20,6 +20,7 @@ public:
 		switch(evolutionType)
 		{
 		default:
+			mutationType = evolutionType;
 			break;
 		//random
 		case 0:

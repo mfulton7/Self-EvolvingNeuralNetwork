@@ -24,6 +24,9 @@
     <ClCompile Include="neural_net.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="manager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="neural_net.h">
