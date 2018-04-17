@@ -14,24 +14,10 @@ public:
 	//method to create new branch
 	void Mutate(Network* n, int evolutionType) 
 	{
-		int mutationType;
+		int mutationType = evolutionType;
 		int numberOfAvailableMutations = 6;
 		//determine how the mutation is selected
-		switch(evolutionType)
-		{
-		default:
-			mutationType = evolutionType;
-			break;
-		//random
-		case 0:
-			mutationType = rand() & numberOfAvailableMutations;
-			break;
-		//weights
-		case 1:
-			//create a struct to hold weights for the effectiveness of each mutation type
-			break;
-		}
-
+	
 		//call the function for the mutation selected
 		switch (mutationType)
 		{
@@ -80,7 +66,7 @@ public:
 	void injectBlock(Network* n) 
 	{
 		//don't have to worry about dataflow integrity as much when adding
-		int hiddenLayerChoice = rand() & n->hiddenLayers.size();
+		int hiddenLayerChoice = rand() & n->hiddenLayers.size() -1;
 
 		
 		//add it to hidden layer
@@ -92,26 +78,26 @@ public:
 		//if its the first hidden then the backwards must be to inputs
 		if (hiddenLayerChoice == 0) 
 		{
-			oNode = rand() & n->inputs->blocks.size();
+			oNode = rand() & n->inputs->blocks.size() -1;
 			n->inputs->addConnection(new Connection(n->hiddenLayers[hiddenLayerChoice]->blocks.back(), n->inputs->blocks[oNode]));
 		}
 		else 
 		{
-			oNode = rand() & n->hiddenLayers[hiddenLayerChoice - 1]->blocks.size();
+			oNode = rand() & n->hiddenLayers[hiddenLayerChoice - 1]->blocks.size() -1;
 			
 			n->hiddenLayers[hiddenLayerChoice - 1]->addConnection(new Connection(n->hiddenLayers[hiddenLayerChoice]->blocks.back(), n->hiddenLayers[hiddenLayerChoice - 1]->blocks[oNode]));
 		}
 
 		//connect at least one forwards connection
 		//if its the last hidden layer then the forwards must be an output
-		if (hiddenLayerChoice == n->hiddenLayers.size()) 
+		if (hiddenLayerChoice == (n->hiddenLayers.size() - 1)) 
 		{
-			dNode = rand() & n->outputs->blocks.size();
+			dNode = rand() & n->outputs->blocks.size() - 1;
 			n->hiddenLayers.back()->addConnection(new Connection(n->outputs->blocks[dNode], n->hiddenLayers.back()->blocks.back()));
 		}
 		else
 		{
-			dNode = rand() & n->hiddenLayers[hiddenLayerChoice + 1]->blocks.size();
+			dNode = rand() & n->hiddenLayers[hiddenLayerChoice + 1]->blocks.size() - 1;
 			n->hiddenLayers[hiddenLayerChoice]->addConnection(new Connection(n->hiddenLayers[hiddenLayerChoice + 1]->blocks[dNode], n->hiddenLayers[hiddenLayerChoice]->blocks.back()));
 		}
 	};
@@ -130,9 +116,9 @@ public:
 		//get two random numbers for hidden layers
 		//note numbers cannot be the same
 		//need some functionality to hit output layer
-		int hiddenLayerChoice1 = (rand() & n->hiddenLayers.size()) - 1;
+		int hiddenLayerChoice1 = (rand() & n->hiddenLayers.size() - 1);
 		int diff = n->hiddenLayers.size() - (hiddenLayerChoice1);
-		int hiddenLayerChoice2 = (rand() & diff) + hiddenLayerChoice1;
+		int hiddenLayerChoice2 = rand() & diff + hiddenLayerChoice1;
 		//get two random numbers for nodes in chosen hidden layers
 		int nodeChoice1;
 		int nodeChoice2;
@@ -165,7 +151,7 @@ public:
 		}
 		else 
 		{
-			nodeChoice2 = rand() & n->hiddenLayers[hiddenLayerChoice2]->blocks.size();
+			nodeChoice2 = rand() & n->hiddenLayers[hiddenLayerChoice2]->blocks.size() -1;
 			injection->addDest(n->hiddenLayers[hiddenLayerChoice2]->blocks[nodeChoice2]);
 		}
 
@@ -298,8 +284,9 @@ public:
 	void rmBlock(Network* n) 
 	{
 		//select random element
-		int layerNum = rand() % (n->hiddenLayers.size());
-		int blockNum = rand() & n->hiddenLayers[layerNum]->blocks.size();
+		int layerNum = rand() % n->hiddenLayers.size();
+		if (layerNum == n->hiddenLayers.size()) { layerNum--; }
+		int blockNum = rand() & n->hiddenLayers[layerNum]->blocks.size() - 1;
 		rBlock(n, layerNum, blockNum);
 		
 	};

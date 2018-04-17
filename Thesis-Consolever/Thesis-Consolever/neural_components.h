@@ -191,7 +191,7 @@ public:
 		//population.push_back(new Neuron());
 	};
 
-
+	IO_Block& operator=(const IO_Block &obj);
 
 };
 
@@ -223,15 +223,7 @@ public:
 		strengthOfConnection = ((float)rand() / RAND_MAX);
 	};
 
-	Connection& operator = (const Connection &obj) 
-	{
-		ID = obj.ID;
-		connectionError = obj.connectionError;
-		strengthOfConnection = obj.strengthOfConnection;
-		*originBlock = *obj.originBlock;
-		*destinationBlock = *obj.destinationBlock;
-		return *this;
-	}
+	Connection& operator = (const Connection &obj);
 
 	//destination is first then origin
 	Connection(Block* dest, Block* origin) {
@@ -282,32 +274,6 @@ public:
 
 };
 
-Block & Block::operator=(const Block & obj)
-{
-	outputFromBlock = obj.outputFromBlock;
-	totalOutput = obj.totalOutput;
-	netInput = obj.netInput;
-
-	for (int i = 0; i < obj.population.size(); i++)
-	{
-		population.push_back(new Neuron(false));
-		*population[i] = *obj.population[i];
-	}
-
-	for (int j = 0; j < obj.inConnectionCache.size(); j++)
-	{
-		inConnectionCache.push_back(new Connection());
-		*inConnectionCache[j] = *obj.inConnectionCache[j];
-	}
-
-	for (int k = 0; k < obj.outConnectionCache.size(); k++)
-	{
-		outConnectionCache.push_back(new Connection());
-		*outConnectionCache[k] = *obj.outConnectionCache[k];
-	}
-
-	return *this;
-}
 //convert to template?
 template <typename T>
 class Layer

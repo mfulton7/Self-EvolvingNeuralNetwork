@@ -295,26 +295,31 @@ public:
 			runEpoch();
 			std::cout << "Epoch " << i << " has been completed." << std::endl;
 			
-			for each (netBundle* n in networks)
-			{
-				if (n->canMutate) 
+			//for each (netBundle* n in networks)
+			if (i != (numberofPasses - 1)) {
+				vector<netBundle*> tmp;
+				for (int i = 0; i < networks.size(); i++)
 				{
-					//call mutation stuff
-					//make 6 copies
-					for (int i = 0; i < 6; i++) 
-					{
-						netBundle* cn = new netBundle();
-						*cn = *n;
-						cn->evoHandler->Mutate(cn->neuralNet, i);
-						this->networks.push_back(cn);
-					}
-					//then mutate one of the copies
-					
-					//n->evoHandler->Mutate(n->neuralNet, 0);
-					//function that does all mutations and then compares them?
-				}
-			}
 
+					if (networks[i]->canMutate)
+					{
+						//call mutation stuff
+						//make 6 copies
+						for (int j = 0; j < 6; j++)
+						{
+							netBundle* cn = new netBundle();
+							*cn = *networks[i];
+							cn->evoHandler->Mutate(cn->neuralNet, j);
+							tmp.push_back(cn);
+						}
+						//then mutate one of the copies
+
+						//n->evoHandler->Mutate(n->neuralNet, 0);
+						//function that does all mutations and then compares them?
+					}
+				}
+				this->networks.insert(this->networks.end(), tmp.begin(), tmp.end());
+			}
 			
 			
 		}
@@ -380,15 +385,18 @@ public:
 				comparisonCache.push_back(bundle);
 				continue;
 			}
+			else { foundEvo = true; }
 			float evaluation = 0.0f;
 			//todo implement size weights that benefit smaller networks
 			//evaluation = (bundle->statsHandler->average_error.back * accuracyWeight);
 			
-			if (currentLeader->statsHandler->average_error > bundle->statsHandler->average_error) 
+			if (currentLeader->statsHandler->average_error < bundle->statsHandler->average_error) 
 			{
 				currentLeader = bundle;
 				foundEvo = true;
 			}
+
+			
 
 		}
 		//clear all elements of network

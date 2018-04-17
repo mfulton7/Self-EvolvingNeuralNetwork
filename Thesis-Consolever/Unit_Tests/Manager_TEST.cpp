@@ -14,6 +14,8 @@ namespace Unit_Tests
 		{
 			Manager testManager(1);
 			//Network* testNetworkA = testManager.spawnStandardNetwork();
+			
+			//Assert::AreNotEqual(copy->neuralNet->hiddenLayers.front()->blocks.front()->ID, (float)51515231);
 
 			//testManager.runPass(testNetworkA);
 		}

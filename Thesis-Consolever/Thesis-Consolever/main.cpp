@@ -54,7 +54,9 @@ int main() {
 	////testManager.spawnStandardNetwork(6, 25);
 	////testManager.spawnStandardNetwork(6, 10);
 
-	testManager.spawnEvolvedNetwork(3, 3);
+
+
+	testManager.spawnEvolvedNetwork(1, 1);
 	
 	
 	
