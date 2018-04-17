@@ -1,2 +1,14 @@
 Archive File:
-ID # 96
+ID # 59
+Muatable : 1
+Dataset : 
+Epoch Size : 100
+Epoch 0 Error : 0.0806158
+Run Time 0 (ms) : 9
+---------------------------
+Epoch 1 Error : 0.0589501
+Run Time 1 (ms) : 9
+---------------------------
+Final Percent Error : 0.0511664
+Total Connection Count : 3
+Total Node Count : 1

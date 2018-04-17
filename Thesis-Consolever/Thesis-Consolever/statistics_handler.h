@@ -22,7 +22,7 @@ public:
 		epoch_size = epochSize;
 	}
 
-	
+	//StatisticsHandler& operator=(const StatisticsHandler &obj);
 };
 #endif // !statistics_handler
 
