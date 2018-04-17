@@ -365,7 +365,7 @@ public:
 	void runBackwardsOnHiddenLayer(int hiddenLayerIndex) 
 	{
 		//single thread mode for narrower networks
-		if (this->hiddenLayers[hiddenLayerIndex]->connections.size() < 5000) 
+		if (this->hiddenLayers[hiddenLayerIndex]->connections.size() < 400) 
 		{
 			this->calculateAndApplyConnectionErrorForRange(hiddenLayerIndex, 0, this->hiddenLayers[hiddenLayerIndex]->connections.size());
 		}

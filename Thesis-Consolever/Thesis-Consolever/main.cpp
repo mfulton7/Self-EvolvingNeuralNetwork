@@ -37,30 +37,25 @@ int main() {
 	
 	//testManager.spawnStandardNetwork(1, 50);
 	testManager.spawnStandardNetwork(1, 25);
-	//testManager.spawnStandardNetwork(1, 10);
-	////testManager.spawnStandardNetwork(2, 50);
-	//testManager.spawnStandardNetwork(2, 25);
-	//testManager.spawnStandardNetwork(2, 10);
-	////testManager.spawnStandardNetwork(3, 50);
-	//testManager.spawnStandardNetwork(3, 25);
-	//testManager.spawnStandardNetwork(3, 10);
-	////testManager.spawnStandardNetwork(4, 50);
-	//testManager.spawnStandardNetwork(4, 25);
-	//testManager.spawnStandardNetwork(4, 10);
-	////testManager.spawnStandardNetwork(5, 50);
-	//testManager.spawnStandardNetwork(5, 25);
-	//testManager.spawnStandardNetwork(5, 10);
-	////testManager.spawnStandardNetwork(6, 50);
-	//testManager.spawnStandardNetwork(6, 25);
-	//testManager.spawnStandardNetwork(6, 10);
-	////testManager.spawnStandardNetwork(7, 50);
-	//testManager.spawnStandardNetwork(7, 25);
-	//testManager.spawnStandardNetwork(7, 10);
-	////testManager.spawnStandardNetwork(8, 50);
-	//testManager.spawnStandardNetwork(8, 25);
-	//testManager.spawnStandardNetwork(8, 10);
+	testManager.spawnStandardNetwork(1, 10);
+	//testManager.spawnStandardNetwork(2, 50);
+	testManager.spawnStandardNetwork(2, 25);
+	testManager.spawnStandardNetwork(2, 10);
+	//testManager.spawnStandardNetwork(3, 50);
+	testManager.spawnStandardNetwork(3, 25);
+	testManager.spawnStandardNetwork(3, 10);
+	//testManager.spawnStandardNetwork(4, 50);
+	testManager.spawnStandardNetwork(4, 25);
+	testManager.spawnStandardNetwork(4, 10);
+	//testManager.spawnStandardNetwork(5, 50);
+	testManager.spawnStandardNetwork(5, 25);
+	testManager.spawnStandardNetwork(5, 10);
+	//testManager.spawnStandardNetwork(6, 50);
+	testManager.spawnStandardNetwork(6, 25);
+	testManager.spawnStandardNetwork(6, 10);
 	
-	//testManager.spawnEvolvedNetwork(3, 100);
+	
+	testManager.spawnEvolvedNetwork(3, 100);
 
 	
 
