@@ -32,11 +32,11 @@ int main() {
 
 	Manager testManager(dataID);
 	std::cout << "Populating test data.... " << std::endl;
-	testManager.populateTestDataList(2000);
+	testManager.populateTestDataList(5000);
 	std::cout << "Creating network ... " << std::endl;
 	
 	//testManager.spawnStandardNetwork(1, 50);
-	testManager.spawnStandardNetwork(1, 25);
+	testManager.spawnStandardNetwork(1, 50);
 	testManager.spawnStandardNetwork(1, 10);
 	//testManager.spawnStandardNetwork(2, 50);
 	testManager.spawnStandardNetwork(2, 25);
@@ -51,8 +51,8 @@ int main() {
 	testManager.spawnStandardNetwork(5, 25);
 	testManager.spawnStandardNetwork(5, 10);
 	//testManager.spawnStandardNetwork(6, 50);
-	testManager.spawnStandardNetwork(6, 25);
-	testManager.spawnStandardNetwork(6, 10);
+	//testManager.spawnStandardNetwork(6, 25);
+	//testManager.spawnStandardNetwork(6, 10);
 	
 	
 	
@@ -61,9 +61,12 @@ int main() {
 
 	//sets up input labels for current data type
 	testManager.initializeIO();
-	
+	std::cout << "How many epochs would you like to run?" << std::endl;
+	int numberOfEpochs;
+	std::cin >> numberOfEpochs;
+
 	std::cout << "Training..." << std::endl;
-	testManager.runEpochs(10);
+	testManager.runEpochs(numberOfEpochs);
 	testManager.testAccuracy(50);
 
 	for each (netBundle* b in testManager.networks)

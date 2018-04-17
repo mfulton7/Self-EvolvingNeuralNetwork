@@ -53,6 +53,16 @@ struct netBundle
 		
 	}
 
+	//copy constructor
+	netBundle(const netBundle &obj) 
+	{
+		canMutate = obj.canMutate;
+		neuralNet = new Network();
+		*neuralNet = *obj.neuralNet;
+		//keep stats handler since only one version of the same network when logging stats
+
+	}
+
 	
 	
 	
@@ -279,6 +289,9 @@ public:
 	{
 		for (int i = 0; i < numberofPasses; i++) 
 		{
+			//get rid of all but most effective network
+			//note does not wipe non mutable networks
+			pruneNetworkVector();
 			runEpoch();
 			std::cout << "Epoch " << i << " has been completed." << std::endl;
 			
@@ -291,13 +304,13 @@ public:
 					//todo pretty sure this needs a copy constructor
 					//netBundle copy = *networks[0];
 					//then mutate one of the copies
+					
 					n->evoHandler->Mutate(n->neuralNet, 0);
+					//function that does all mutations and then compares them?
 				}
 			}
 
-			//get rid of all but most effective network
-			//note do not wipe non mutable networks
-			pruneNetworkVector();
+			
 			
 		}
 	
@@ -306,6 +319,8 @@ public:
 	//todo need to test network for total accuracy
 	void testAccuracy(int batchSize) 
 	{
+		//get rid of all versions before testing
+		pruneNetworkVector();
 		for each (netBundle* selectedNet in networks) 
 		{
 			

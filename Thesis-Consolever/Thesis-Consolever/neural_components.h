@@ -90,6 +90,31 @@ public:
 
 	};
 
+	Block(const Block &obj) 
+	{
+		outputFromBlock = obj.outputFromBlock;
+		totalOutput = obj.totalOutput;
+		netInput = obj.netInput;
+
+		for (int i = 0; i < obj.population.size(); i++) 
+		{
+			population.push_back(new Neuron(false));
+			*population[i] = *obj.population[i];
+		}
+
+		for (int j = 0; j < obj.inConnectionCache.size(); j++) 
+		{
+			inConnectionCache.push_back(new Connection());
+			*inConnectionCache[j] = *obj.inConnectionCache[j];
+		}
+
+		for (int k = 0; k < obj.outConnectionCache.size(); k++)
+		{
+			outConnectionCache.push_back(new Connection());
+			*outConnectionCache[k] = *obj.outConnectionCache[k];
+		}
+	}
+
 	//ctor for a specific block size
 	Block(int size) {
 		for (int i = 0; i < size; i++) {
@@ -218,6 +243,16 @@ public:
 		//create random weight between 0 and 1
 		strengthOfConnection = ((float)rand() / RAND_MAX);
 	};
+
+	Connection(const Connection &obj) 
+	{
+		ID = obj.ID;
+		connectionError = obj.connectionError;
+		strengthOfConnection = obj.strengthOfConnection;
+		*originBlock = *obj.originBlock;
+		*destinationBlock = *obj.destinationBlock;
+	}
+
 	//destination is first then origin
 	Connection(Block* dest, Block* origin) {
 		destinationBlock = dest;
@@ -292,6 +327,21 @@ public:
 	Layer()
 	{
 
+	}
+
+	Layer(const Layer &obj) 
+	{
+		for (int i = 0; i < obj.blocks.size(); i++) 
+		{
+			blocks.push_back(new T);
+			*blocks[i] = *obj.blocks[i];
+		}
+
+		for (int j = 0; j < obj.connections.size(); j++) 
+		{
+			connections.push_back(new Connection());
+			*connections[j] = *obj.connections[j];
+		}
 	}
 
 	Layer(int blockCount, int blockSize)

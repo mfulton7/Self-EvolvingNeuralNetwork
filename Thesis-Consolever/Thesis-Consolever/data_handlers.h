@@ -8,6 +8,7 @@
 
 using std::vector;
 
+
 template<typename inputFormat, typename outputFormat>
 struct DataPair
 {
@@ -69,7 +70,10 @@ public:
 		if (testMode == 3) 
 		{
 			std::ifstream in;
-			in.open("AAPL_data.csv");
+			std::cout << "Pleae enter the stock symbol ..." << std::endl;
+			std::string stockSymbol;
+			std::cin >> stockSymbol;
+			in.open("Stocks/" + stockSymbol + "_data.csv");
 			std::string date;
 			std::string openPrice;
 			std::string highPrice;
@@ -85,7 +89,8 @@ public:
 			//todo add date as a param???
 			std::getline(in, headers, '\n');
 
-			for (int i = 0; i < dataSetSize; i++) {
+			//1260 IS THE MAX FOR STOCK DATA
+			for (int i = 0; i < 1260; i++) {
 				getline(in, date, ',');
 				std::getline(in, openPrice, ',');
 				std::getline(in, highPrice, ',');

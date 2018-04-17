@@ -49,6 +49,21 @@ public:
 
 	float outputRatio = 1.0f;
 
+	//copy constructor
+	Network(const Network &obj)
+	{
+		inputs = new Layer<IO_Block>;
+		*inputs = *obj.inputs;
+		outputs = new Layer<IO_Block>;
+		*outputs = *obj.outputs;
+		testRef = obj.testRef;
+		for (int i = 0; i < obj.hiddenLayers.size(); i++) 
+		{
+			hiddenLayers.push_back(new Layer<Block>);
+			*hiddenLayers[i] = *obj.hiddenLayers[i];
+		}
+	};
+
 	//inputs to network
 	Layer<IO_Block>* inputs;
 
@@ -240,6 +255,8 @@ public:
 	//ctors
 	//////////////////////////////////////
 	Network();
+
+	
 
 	//ctor for creating a basic network with x blocks of y size
 	//note this creates a chain configuration
