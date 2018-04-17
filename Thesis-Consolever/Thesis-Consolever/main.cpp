@@ -55,7 +55,7 @@ int main() {
 	testManager.spawnStandardNetwork(6, 10);
 	
 	
-	testManager.spawnEvolvedNetwork(3, 100);
+	
 
 	
 
@@ -63,8 +63,8 @@ int main() {
 	testManager.initializeIO();
 	
 	std::cout << "Training..." << std::endl;
-	testManager.runEpochs(1);
-	testManager.testAccuracy(1);
+	testManager.runEpochs(10);
+	testManager.testAccuracy(50);
 
 	for each (netBundle* b in testManager.networks)
 	{
