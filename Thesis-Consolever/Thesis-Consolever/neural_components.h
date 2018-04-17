@@ -73,6 +73,8 @@ public:
 
 	//summed and quashed output of this block
 	float totalOutput;
+	//uncrushed output
+	float unQuashedOutput;
 
 
 	//list of references to all connections that this block is a particpant in
@@ -101,7 +103,7 @@ public:
 	//to be run after weights are summed into nodepotential
 	void activateSigmoid(float summedOutput)
 	{
-
+		unQuashedOutput = summedOutput;
 		//quash sum using "fast sigmoid"
 		totalOutput = summedOutput / (1 + abs(summedOutput));
 
@@ -115,9 +117,13 @@ public:
 		float sumOfInputs = 0.0f;
 		//if this isn't in the first (input) layer then pull from input buffer
 		if (!isInput) {
-			for each (float input in this->inputFromConnections)
+			/*for each (float input in this->inputFromConnections)
 			{
 				sumOfInputs += input;
+			}*/
+			for (int i = 0; i < this->inputFromConnections.size(); i++) 
+			{
+				sumOfInputs += this->inputFromConnections[i];
 			}
 		}
 		//if this is in the first layer then input buffer isn't used to pull directly from loaded inputs

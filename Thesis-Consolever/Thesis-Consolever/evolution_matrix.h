@@ -61,11 +61,7 @@ public:
 			rmLay(n);
 			break;
 
-		case 6:
-			bisectConn(n);
-			break;
-
-
+	
 		}
 	
 	
@@ -178,9 +174,7 @@ public:
 		
 	};
 
-	//create a new block inside of a connection between two blocks
-	//effectively creating a new layer
-	void bisectConn(Network* n) {};
+	
 
 	//layer injection
 	//creates a layer of x nodes then connects each node once forwards and once backwards
@@ -211,13 +205,9 @@ public:
 	};
 
 	//block deletion
-	//3
-	void rmBlock(Network* n) 
+	//helper function
+	void rBlock(Network* n, int layerNum, int blockNum) 
 	{
-		//select random element
-		int layerNum = rand() % (n->hiddenLayers.size());
-		int blockNum = rand() & n->hiddenLayers[layerNum]->blocks.size();
-
 		//buffer for connections that need to be cleaned at the end of the removal
 		vector<Connection*> inBuffer;
 		vector<Connection*> outBuffer;
@@ -242,8 +232,8 @@ public:
 			}
 			//add input to buffer
 			inBuffer.push_back(inC);
-			
-	
+
+
 		}
 
 		//delete original inputs and outputs
@@ -251,30 +241,30 @@ public:
 		//leaving AB AC
 		for each (Connection* c in inBuffer)
 		{
-			
+
 			//find the pointer in the hidden layers
 			//todo this breaks xutility find out why and fixxx
-			for (int i = 0; i < n->hiddenLayers.size(); i++) 
+			for (int i = 0; i < n->hiddenLayers.size(); i++)
 			{
-				for (int j = 0; j < n->hiddenLayers[i]->connections.size(); j++) 
+				for (int j = 0; j < n->hiddenLayers[i]->connections.size(); j++)
 				{
-					if (n->hiddenLayers[i]->connections[j] == c) 
+					if (n->hiddenLayers[i]->connections[j] == c)
 					{
 						//matched
 						n->hiddenLayers[i]->connections.erase(n->hiddenLayers[i]->connections.begin() + j);
 					}
-				}				
+				}
 			}
 
 			for (int k = 0; k < n->inputs->connections.size(); k++)
 			{
-				if (n->inputs->connections[k] == c) 
+				if (n->inputs->connections[k] == c)
 				{
 					n->inputs->connections.erase(n->inputs->connections.begin() + k);
 				}
 			}
 
-			
+
 		}
 		for each (Connection* c in outBuffer)
 		{
@@ -302,6 +292,15 @@ public:
 
 		//actually delete the block now that the connections have been spliced
 		n->hiddenLayers[layerNum]->blocks.erase(n->hiddenLayers[layerNum]->blocks.begin() + blockNum);
+	}
+	//3
+	void rmBlock(Network* n) 
+	{
+		//select random element
+		int layerNum = rand() % (n->hiddenLayers.size());
+		int blockNum = rand() & n->hiddenLayers[layerNum]->blocks.size();
+		rBlock(n, layerNum, blockNum);
+		
 	};
 
 	//connection deletion
@@ -313,6 +312,7 @@ public:
 		if (n->hiddenLayers.size() <= 2) 
 		{
 			//log this
+			//maybe call another mutation???
 			return;
 		
 		}
@@ -335,18 +335,39 @@ public:
 		//check that B has connections in other than AB
 		auto selectedConn = n->hiddenLayers[layerNum]->connections[connNum];
 
-		if (selectedConn->originBlock->inConnectionCache.size() > 1 && selectedConn->destinationBlock->inConnectionCache.size() > 1)
+		if (selectedConn->originBlock->outConnectionCache.size() > 1 && selectedConn->destinationBlock->inConnectionCache.size() > 1)
 		{
-			//erase connection from connections in hidden layers
+			
+
 			//erase connection from block connection caches
+			for (int i = 0; i<selectedConn->originBlock->outConnectionCache.size(); i++)
+			{
+				if (selectedConn->originBlock->outConnectionCache[i] == selectedConn)
+				{
+					selectedConn->originBlock->outConnectionCache.erase(selectedConn->originBlock->outConnectionCache.begin() + i);
+
+				}
+			}
+			for (int i = 0; i<selectedConn->destinationBlock->inConnectionCache.size(); i++)
+			{
+				if (selectedConn->destinationBlock->inConnectionCache[i] == selectedConn)
+				{
+					selectedConn->destinationBlock->inConnectionCache.erase(selectedConn->destinationBlock->inConnectionCache.begin() + i);
+					
+				}
+			}
+
+			//erase connection from connections in hidden layers
+			n->hiddenLayers[layerNum]->connections.erase(n->hiddenLayers[layerNum]->connections.begin() + connNum);
+			
 		}
+		//selected con cannot be removed without breaking data integrity
 		else
 		{
 			//pick new conn
+			//log ???
 		}
 
-
-		//need to find a way to make sure data integrity is kept though
 
 	
 	};
@@ -356,8 +377,22 @@ public:
 	void rmLay(Network* n) 
 	{
 		//if hidden layers size is greater then one
-
-		//random vs full spilcing?
+		if (n->hiddenLayers.size() > 1) 
+		{
+			//select random element
+			int layerNum = rand() % (n->hiddenLayers.size());
+			for (int i = 0; i < n->hiddenLayers[i]->blocks.size(); i++) 
+			{
+				rBlock(n, layerNum, i);
+			}
+			
+			
+		}
+		else
+		{
+			//log failure
+		}
+		
 	};
 
 

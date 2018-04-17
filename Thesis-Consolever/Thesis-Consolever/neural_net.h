@@ -15,8 +15,9 @@
 #include <boost\serialization\vector.hpp>
 
 //constant definition
-const static int THREAD_COUNT = 16;
-const static int EPOCH_SIZE = 10;
+
+const static int THREAD_COUNT = 4;
+const static int EPOCH_SIZE = 100;
 
 using std::vector;
 using std::thread;
@@ -46,6 +47,8 @@ public:
 	//rate at which changes to network via backprop are multiplied
 	float learningRate = .2;
 
+	float outputRatio = 1.0f;
+
 	//inputs to network
 	Layer<IO_Block>* inputs;
 
@@ -54,6 +57,7 @@ public:
 
 	//correct outputs to network
 	vector<float> correctOutputs;
+	vector<float> unCrushedCorrectOutputs;
 
 	//list of error of each output
 	vector<float> indErrorList;
@@ -131,11 +135,13 @@ public:
 		int counter = 0;
 		//clear outputs from last load
 		this->correctOutputs.clear();
+		this->unCrushedCorrectOutputs.clear();
 		for each (float i in dataPairList.output)
 		{
 			//try to update the inputs for a pass
 			try
 			{
+				this->unCrushedCorrectOutputs.push_back(i);
 				i = i / (1 + abs(i));
 				this->correctOutputs.push_back(i);
 			}
@@ -178,6 +184,31 @@ public:
 
 		totalError = totalResult;
 		
+	};
+
+	
+
+	void compareTestResults() 
+	{
+
+		//clear error list before beginning
+		indErrorList.clear();
+		float totalCorrect = 0;
+		float totalGuess = 0;
+
+		for (int i = 0; i< correctOutputs.size(); i++)
+		{
+			totalGuess += outputs[i].blocks.front()->unQuashedOutput;
+			//
+			totalCorrect = unCrushedCorrectOutputs[i];
+			
+		}
+
+		float percentAccurcay = 0;
+		totalGuess = totalGuess * outputRatio;
+		percentAccurcay = (totalGuess - totalCorrect) / totalCorrect;
+		//totalError = 1 - percentAccurcay;
+	
 	};
 
 	//return the summation of connection errors for all connections that the dest of this connections is an origin for
@@ -333,36 +364,45 @@ public:
 
 	void runBackwardsOnHiddenLayer(int hiddenLayerIndex) 
 	{
-		vector<thread*> threads;
-		//divide connection list by number of threads that can be used
-		int connectionsPerThread = this->hiddenLayers[hiddenLayerIndex]->connections.size() / THREAD_COUNT;
-		//todo need to find way to catch remainder
-		int currentIndex = 0;
-		//spawn a thread to work on each connection in the current layer
-		
-		while (threads.size() < THREAD_COUNT) 
+		//single thread mode for narrower networks
+		if (this->hiddenLayers[hiddenLayerIndex]->connections.size() < 5000) 
 		{
-			thread* worker = new thread(&Network::calculateAndApplyConnectionErrorForRange, this, hiddenLayerIndex, currentIndex, (currentIndex + connectionsPerThread));
-			threads.push_back(worker);
-			currentIndex += connectionsPerThread;
+			this->calculateAndApplyConnectionErrorForRange(hiddenLayerIndex, 0, this->hiddenLayers[hiddenLayerIndex]->connections.size());
 		}
-		//remainder catch
-		//used i.e. 5 connections with 2 threads
-		//above loop creates 2 threads with 2 connections each
-		//this if takes the remainder of 4/5 (1) and handles it in its own thread
-		if (this->hiddenLayers[hiddenLayerIndex]->connections.size() % THREAD_COUNT != 0) 
-		{
-			thread* worker = new thread(&Network::calculateAndApplyConnectionErrorForRange, this, hiddenLayerIndex, currentIndex, (this->hiddenLayers[hiddenLayerIndex]->connections.size()));
-			threads.push_back(worker);
-		}
+		else {
+			//todo
+			//add single thread mode for narrower networks bc im pretty sure that the spawning of threads is wasting time
+			vector<thread*> threads;
+			//divide connection list by number of threads that can be used
+			int connectionsPerThread = this->hiddenLayers[hiddenLayerIndex]->connections.size() / THREAD_COUNT;
+			//todo need to find way to catch remainder
+			int currentIndex = 0;
+			//spawn a thread to work on each connection in the current layer
 
-		//handle node back prop in a single thread since connections are significantly larger than node count
-		//todo
-		//wait for all threads to finish before exiting function
-		for each (thread* t in threads)
-		{
-			t->join();
-			t->~thread();
+			while (threads.size() < THREAD_COUNT)
+			{
+				thread* worker = new thread(&Network::calculateAndApplyConnectionErrorForRange, this, hiddenLayerIndex, currentIndex, (currentIndex + connectionsPerThread));
+				threads.push_back(worker);
+				currentIndex += connectionsPerThread;
+			}
+			//remainder catch
+			//used i.e. 5 connections with 2 threads
+			//above loop creates 2 threads with 2 connections each
+			//this if takes the remainder of 4/5 (1) and handles it in its own thread
+			if (this->hiddenLayers[hiddenLayerIndex]->connections.size() % THREAD_COUNT != 0)
+			{
+				thread* worker = new thread(&Network::calculateAndApplyConnectionErrorForRange, this, hiddenLayerIndex, currentIndex, (this->hiddenLayers[hiddenLayerIndex]->connections.size()));
+				threads.push_back(worker);
+			}
+
+			//handle node back prop in a single thread since connections are significantly larger than node count
+			//todo
+			//wait for all threads to finish before exiting function
+			for each (thread* t in threads)
+			{
+				t->join();
+				t->~thread();
+			}
 		}
 	};
 

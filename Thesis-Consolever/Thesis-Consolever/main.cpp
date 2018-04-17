@@ -23,7 +23,7 @@ int main() {
 	//8 goto step 4
 
 	std::cout << "Hello world" << std::endl;
-	std::cout << "Using " << THREAD_COUNT << " threads." << std::endl;
+	std::cout << "Using " << THREAD_COUNT << " threads per network." << std::endl;
 	std::cout << "Hardware supports up to " << std::thread::hardware_concurrency() << std::endl;
 	std::cout << "Please select data type for testing....." << std::endl;
 	std::cout << "0 -> Simple Equation\n 1 -> Moderate Equation\n 2 -> Cosine\n 3 -> Stock Market" << std::endl;
@@ -32,19 +32,51 @@ int main() {
 
 	Manager testManager(dataID);
 	std::cout << "Populating test data.... " << std::endl;
-	testManager.populateTestDataList(1000);
+	testManager.populateTestDataList(2000);
 	std::cout << "Creating network ... " << std::endl;
-	testManager.spawnStandardNetwork(5, 40);
-	testManager.spawnEvolvedNetwork(3, 3);
+	
+	//testManager.spawnStandardNetwork(1, 50);
+	testManager.spawnStandardNetwork(1, 25);
+	//testManager.spawnStandardNetwork(1, 10);
+	////testManager.spawnStandardNetwork(2, 50);
+	//testManager.spawnStandardNetwork(2, 25);
+	//testManager.spawnStandardNetwork(2, 10);
+	////testManager.spawnStandardNetwork(3, 50);
+	//testManager.spawnStandardNetwork(3, 25);
+	//testManager.spawnStandardNetwork(3, 10);
+	////testManager.spawnStandardNetwork(4, 50);
+	//testManager.spawnStandardNetwork(4, 25);
+	//testManager.spawnStandardNetwork(4, 10);
+	////testManager.spawnStandardNetwork(5, 50);
+	//testManager.spawnStandardNetwork(5, 25);
+	//testManager.spawnStandardNetwork(5, 10);
+	////testManager.spawnStandardNetwork(6, 50);
+	//testManager.spawnStandardNetwork(6, 25);
+	//testManager.spawnStandardNetwork(6, 10);
+	////testManager.spawnStandardNetwork(7, 50);
+	//testManager.spawnStandardNetwork(7, 25);
+	//testManager.spawnStandardNetwork(7, 10);
+	////testManager.spawnStandardNetwork(8, 50);
+	//testManager.spawnStandardNetwork(8, 25);
+	//testManager.spawnStandardNetwork(8, 10);
+	
+	//testManager.spawnEvolvedNetwork(3, 100);
+
+	
 
 	//sets up input labels for current data type
 	testManager.initializeIO();
 	
 	std::cout << "Training..." << std::endl;
-	testManager.runEpochs(10);
-	testManager.networks[0]->logStats();
-	//testManager.networks[0]->logTopography();
-	testManager.networks[0]->terminateConnection();
+	testManager.runEpochs(1);
+	testManager.testAccuracy(1);
+
+	for each (netBundle* b in testManager.networks)
+	{
+		b->logStats();
+		b->terminateConnection();
+	}
+	
 
 
 	system("PAUSE");

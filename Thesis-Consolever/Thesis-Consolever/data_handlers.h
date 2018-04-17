@@ -60,7 +60,7 @@ public:
 		if (testMode == 2) 
 		{
 			for (int i = 0; i < dataSetSize; i++) {
-				dataresult.push_back(ModerateEquationDataGeneration());
+				dataresult.push_back(CosEquationDataGeneration());
 			}
 		
 		}

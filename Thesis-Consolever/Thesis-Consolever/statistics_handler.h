@@ -12,6 +12,8 @@ public:
 	int epoch_size;
 	vector<std::chrono::milliseconds> run_time;
 	vector<float> average_error;
+
+	float finalPercentAccuracy;
 			
 	StatisticsHandler() { epoch_size = 100; }
 

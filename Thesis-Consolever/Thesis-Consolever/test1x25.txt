@@ -1,0 +1,11 @@
+Archive File:
+ID # 17
+Muatable : 0
+Dataset : 
+Epoch Size : 100
+Epoch 0 Error : 0.00491979
+Run Time 0 (ms) : 86
+---------------------------
+Final Percent Accuracy : 0.12656
+Total Connection Count : 75
+Total Node Count : 25

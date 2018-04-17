@@ -60,6 +60,7 @@ struct netBundle
 	void logStats() 
 	{
 		//todo set dataset stuff for logging
+		out << "Muatable : " << this->canMutate << std::endl;
 		out << "Dataset : " <<  std::endl;
 		out << "Epoch Size : " << statsHandler->epoch_size << std::endl;
 		for (int k = 0; k < statsHandler->average_error.size(); k++) 
@@ -69,6 +70,8 @@ struct netBundle
 			out << "---------------------------" << std::endl;
 
 		}
+
+		out << "Final Percent Error : " << statsHandler->finalPercentAccuracy << std::endl;
 		
 		
 		
@@ -157,7 +160,10 @@ public:
 		//each new network needs a stat tracker
 		StatisticsHandler* stats = new StatisticsHandler(EPOCH_SIZE);
 
-		std::string archiveName = "test" + layerC + 'x' + layerS;
+		std::string archiveName = "test";
+		archiveName += std::to_string(layerC);
+		archiveName += "x";
+		archiveName += std::to_string(layerS);
 		netBundle* result = new netBundle(snet, stats, archiveName, false);
 		
 
@@ -198,38 +204,75 @@ public:
 		selectedNetwork->compareResults();
 		selectedNetwork->completeBackwardPass();		
 	};
+
+	void runTestPass(Network* selectedNetwork) 
+	{
+		selectedNetwork->loadInputs(testDataSet[selectedNetwork->testRef]);
+		selectedNetwork->loadOutputs(testDataSet[selectedNetwork->testRef]);
+		selectedNetwork->completeForwardPass();
+		selectedNetwork->compareTestResults();
+	};
 	
 	//return average error and total time to run pass
 	void runEpoch()
 	{
+		vector<thread*> threads;
 		for each (netBundle* selectedNet in networks)
 		{
-
-			//check if enough test data exists
-			if (testDataSet.size() < selectedNet->neuralNet->testRef)
-			{
-				//todo
-				//log this somehow
-				//generate moar data?
-				//probably replace this with try catch
-			}
-			int passesToRun = selectedNet->statsHandler->epoch_size;
-			float generationAverage = 0;
-			std::chrono::high_resolution_clock::time_point start = std::chrono::high_resolution_clock::now();
-			for (int i = 0; i < passesToRun; i++)
-			{
-				runPass(selectedNet->neuralNet);
-				selectedNet->neuralNet->testRef++;
-				generationAverage += abs(selectedNet->neuralNet->totalError);
-			}
-			generationAverage = generationAverage / passesToRun;
-			std::chrono::high_resolution_clock::time_point end = std::chrono::high_resolution_clock::now();
-			auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
-
-			//save results into stats
-			selectedNet->statsHandler->run_time.push_back(duration);
-			selectedNet->statsHandler->average_error.push_back(generationAverage);
+			thread* worker = new thread(&Manager::runEpochForNetwork, this, selectedNet);
+			threads.push_back(worker);
 		}
+		for each (thread* t in threads)
+		{
+			t->join();
+			t->~thread();
+		}
+
+		//set output Ratio
+		for each (netBundle* selectedNet in networks)
+		{
+			float totalCorrect = 0;
+			float totalGuess = 0;
+			for (int i = 0; i< selectedNet->neuralNet->correctOutputs.size(); i++)
+			{
+				totalGuess += selectedNet->neuralNet->outputs[i].blocks.front()->unQuashedOutput;
+				//
+				totalCorrect = selectedNet->neuralNet->unCrushedCorrectOutputs[i];
+
+			}
+			float ratio = totalCorrect / totalGuess;
+			selectedNet->neuralNet->outputRatio = ratio;
+		}
+
+	};
+
+	void runEpochForNetwork(netBundle* selectedNet) 
+	{
+		//check if enough test data exists
+		if (testDataSet.size() < selectedNet->neuralNet->testRef)
+		{
+			//todo
+			//log this somehow
+			//generate moar data?
+			//probably replace this with try catch
+			std::cout << "Error test data size limit reached...." << std::endl;
+		}
+		int passesToRun = selectedNet->statsHandler->epoch_size;
+		float generationAverage = 0;
+		std::chrono::high_resolution_clock::time_point start = std::chrono::high_resolution_clock::now();
+		for (int i = 0; i < passesToRun; i++)
+		{
+			runPass(selectedNet->neuralNet);
+			selectedNet->neuralNet->testRef++;
+			generationAverage += abs(selectedNet->neuralNet->totalError);
+		}
+		generationAverage = generationAverage / passesToRun;
+		std::chrono::high_resolution_clock::time_point end = std::chrono::high_resolution_clock::now();
+		auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
+
+		//save results into stats
+		selectedNet->statsHandler->run_time.push_back(duration);
+		selectedNet->statsHandler->average_error.push_back(generationAverage);
 	};
 
 	void runEpochs(int numberofPasses)
@@ -244,6 +287,10 @@ public:
 				if (n->canMutate) 
 				{
 					//call mutation stuff
+					//todo make a copy before mutation
+					//todo pretty sure this needs a copy constructor
+					//netBundle copy = *networks[0];
+					//then mutate one of the copies
 					n->evoHandler->Mutate(n->neuralNet, 0);
 				}
 			}
@@ -256,6 +303,46 @@ public:
 	
 	};
 
+	//todo need to test network for total accuracy
+	void testAccuracy(int batchSize) 
+	{
+		for each (netBundle* selectedNet in networks) 
+		{
+			
+
+			
+			//save it in stats handler
+			//get stats handler to print it to file
+
+			//check if enough test data exists
+			if (testDataSet.size() < selectedNet->neuralNet->testRef)
+			{
+				//todo
+				//log this somehow
+				//generate moar data?
+				//probably replace this with try catch
+				std::cout << "Error test data size limit reached...." << std::endl;
+			}
+
+			int passesToRun = batchSize;
+			float generationAverage = 0;
+			std::chrono::high_resolution_clock::time_point start = std::chrono::high_resolution_clock::now();
+			for (int i = 0; i < passesToRun; i++)
+			{
+				runTestPass(selectedNet->neuralNet);
+				selectedNet->neuralNet->testRef++;
+				generationAverage += abs(selectedNet->neuralNet->totalError);
+			}
+			generationAverage = generationAverage / passesToRun;
+			std::chrono::high_resolution_clock::time_point end = std::chrono::high_resolution_clock::now();
+			auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
+
+			//save results into stats
+			selectedNet->statsHandler->run_time.push_back(duration);
+			selectedNet->statsHandler->finalPercentAccuracy = generationAverage;
+		}
+	}
+
 	//function to compare the networks inside the manager and delete all but the best
 	//does not prune non mutable networks since those are assumed to be comparison networks
 	void pruneNetworkVector() 
@@ -263,6 +350,7 @@ public:
 		//initializion only
 		netBundle* currentLeader = this->networks[0];
 		std::vector<netBundle*> comparisonCache;
+		bool foundEvo = false;
 		for each (netBundle* bundle in this->networks)
 		{
 			if(!bundle->canMutate)
@@ -279,6 +367,7 @@ public:
 			if (currentLeader->statsHandler->average_error > bundle->statsHandler->average_error) 
 			{
 				currentLeader = bundle;
+				foundEvo = true;
 			}
 
 		}
@@ -290,7 +379,7 @@ public:
 		//put comparison cache back in
 		networks.insert(networks.end(), comparisonCache.begin(), comparisonCache.end());
 		//add current maximum to the list
-		networks.push_back(currentLeader);
+		if (foundEvo) { networks.push_back(currentLeader); }
 
 	}
 };
