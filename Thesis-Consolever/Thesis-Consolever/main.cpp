@@ -32,17 +32,17 @@ int main() {
 
 	Manager testManager(dataID);
 	std::cout << "Populating test data.... " << std::endl;
-	testManager.populateTestDataList(5000);
+	testManager.populateTestDataList(50000);
 	std::cout << "Creating network ... " << std::endl;
 	
 	////testManager.spawnStandardNetwork(1, 50);
-	//testManager.spawnStandardNetwork(1, 50);
-	//testManager.spawnStandardNetwork(1, 10);
+	testManager.spawnStandardNetwork(1, 50);
+	testManager.spawnStandardNetwork(1, 10);
 	////testManager.spawnStandardNetwork(2, 50);
-	//testManager.spawnStandardNetwork(2, 25);
-	//testManager.spawnStandardNetwork(2, 10);
+	testManager.spawnStandardNetwork(2, 25);
+	testManager.spawnStandardNetwork(2, 10);
 	////testManager.spawnStandardNetwork(3, 50);
-	//testManager.spawnStandardNetwork(3, 25);
+	testManager.spawnStandardNetwork(3, 25);
 	//testManager.spawnStandardNetwork(3, 10);
 	////testManager.spawnStandardNetwork(4, 50);
 	//testManager.spawnStandardNetwork(4, 25);
@@ -56,7 +56,7 @@ int main() {
 
 
 
-	testManager.spawnEvolvedNetwork(1, 1);
+	//testManager.spawnEvolvedNetwork(1, 5);
 	
 	
 	

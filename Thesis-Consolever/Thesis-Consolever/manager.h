@@ -22,6 +22,7 @@ struct netBundle
 	StatisticsHandler* statsHandler;
 	EvolutionMatrix* evoHandler;
 	bool canMutate = false;
+	vector<int> mutationHistory;
 
 	int nodeCount = 0;
 	int connCount = 0;
@@ -69,6 +70,9 @@ struct netBundle
 
 	void logStats() 
 	{
+		if(!out.is_open()){
+			out.open("evolved.txt");
+		}
 		//todo set dataset stuff for logging
 		out << "Muatable : " << this->canMutate << std::endl;
 		out << "Dataset : " <<  std::endl;
@@ -81,13 +85,41 @@ struct netBundle
 
 		}
 
-		out << "Final Percent Error : " << statsHandler->finalPercentAccuracy << std::endl;
+		out << "Final Percent Error : " << statsHandler->finalPercentAccuracy << "%" <<std::endl;
 		
 		
 		
 		calculateSize();
 		out << "Total Connection Count : " << connCount << std::endl;
 		out << "Total Node Count : " << nodeCount << std::endl;
+		out << "Mutation History: " << std::endl;
+		for (int i = 0; i < this->mutationHistory.size(); i++) 
+		{
+			switch (mutationHistory[i])
+			{
+			default:
+				break;
+			case 0:
+				out << "Block injected" << std::endl;
+				break;
+			case 1:
+				out << "Connection Injected" << std::endl;
+				break;
+			case 2:
+				out << "Layer Injected" << std::endl;
+				break;
+			case 3:
+				out << "Block removed" << std::endl;
+				break;
+			case 4:
+				out << "Connection removed" << std::endl;
+				break;
+			case 5:
+				out << "Layer removed" << std::endl;
+				break;
+
+			}
+		}
 	}
 
 	//todo fix this
@@ -291,12 +323,17 @@ public:
 		{
 			//get rid of all but most effective network
 			//note does not wipe non mutable networks
-			pruneNetworkVector();
+			
 			runEpoch();
+			if (i != 0)
+			{
+				pruneNetworkVector();
+			}
 			std::cout << "Epoch " << i << " has been completed." << std::endl;
 			
 			//for each (netBundle* n in networks)
-			if (i != (numberofPasses - 1)) {
+			if (i != (numberofPasses - 1)) 
+			{
 				vector<netBundle*> tmp;
 				for (int i = 0; i < networks.size(); i++)
 				{
@@ -310,6 +347,7 @@ public:
 							netBundle* cn = new netBundle();
 							*cn = *networks[i];
 							cn->evoHandler->Mutate(cn->neuralNet, j);
+							cn->mutationHistory.push_back(j);
 							tmp.push_back(cn);
 						}
 						//then mutate one of the copies
@@ -320,6 +358,7 @@ public:
 				}
 				this->networks.insert(this->networks.end(), tmp.begin(), tmp.end());
 			}
+			
 			
 			
 		}
@@ -356,7 +395,7 @@ public:
 			{
 				runTestPass(selectedNet->neuralNet);
 				selectedNet->neuralNet->testRef++;
-				generationAverage += abs(selectedNet->neuralNet->totalError);
+				generationAverage += abs(selectedNet->neuralNet->percentAccuracy);
 			}
 			generationAverage = generationAverage / passesToRun;
 			std::chrono::high_resolution_clock::time_point end = std::chrono::high_resolution_clock::now();
@@ -372,6 +411,7 @@ public:
 	//does not prune non mutable networks since those are assumed to be comparison networks
 	void pruneNetworkVector() 
 	{
+		if (this->networks.size() == 1) { return; }
 		//initializion only
 		netBundle* currentLeader = this->networks[0];
 		std::vector<netBundle*> comparisonCache;
@@ -390,7 +430,7 @@ public:
 			//todo implement size weights that benefit smaller networks
 			//evaluation = (bundle->statsHandler->average_error.back * accuracyWeight);
 			
-			if (currentLeader->statsHandler->average_error < bundle->statsHandler->average_error) 
+			if (currentLeader->statsHandler->average_error.back() > bundle->statsHandler->average_error.back()) 
 			{
 				currentLeader = bundle;
 				foundEvo = true;

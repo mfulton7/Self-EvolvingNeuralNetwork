@@ -156,6 +156,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="data_handlers.h" />
+    <ClInclude Include="event_logger.h" />
     <ClInclude Include="evolution_matrix.h" />
     <ClInclude Include="manager.h" />
     <ClInclude Include="neural_components.h" />

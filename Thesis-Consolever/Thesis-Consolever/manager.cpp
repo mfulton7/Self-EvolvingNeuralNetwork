@@ -8,6 +8,7 @@ netBundle& netBundle::operator=(const netBundle &obj)
 	*statsHandler = *obj.statsHandler;
 	neuralNet = new Network();
 	*neuralNet = *obj.neuralNet;
+	mutationHistory = obj.mutationHistory;
 	//keep stats handler since only one version of the same network when logging stats
 	return *this;
 

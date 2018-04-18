@@ -17,7 +17,7 @@ public:
 		int mutationType = evolutionType;
 		int numberOfAvailableMutations = 6;
 		//determine how the mutation is selected
-	
+		int size = (rand() & 100) + 1;
 		//call the function for the mutation selected
 		switch (mutationType)
 		{
@@ -33,7 +33,8 @@ public:
 			break;
 
 		case 2:
-			injectLay(n, 10);
+			
+			injectLay(n, size);
 			break;
 
 		case 3:
@@ -287,7 +288,36 @@ public:
 		int layerNum = rand() % n->hiddenLayers.size();
 		if (layerNum == n->hiddenLayers.size()) { layerNum--; }
 		int blockNum = rand() & n->hiddenLayers[layerNum]->blocks.size() - 1;
-		rBlock(n, layerNum, blockNum);
+
+		//random finds a layer with more than one node
+		if (n->hiddenLayers[layerNum]->blocks.size() > 1) 
+		{
+			rBlock(n, layerNum, blockNum);
+			return;
+		}
+		//only one layer so don't delete layer
+		else if (n->hiddenLayers.size() == 1) {
+		//log failure
+			return;
+		}
+		//look for replacement
+		else 
+		{
+			for (int i = 0; i < n->hiddenLayers.size(); i++) 
+			{
+				if (n->hiddenLayers[i]->blocks.size() > 1) 
+				{
+				//remove
+					blockNum = rand() & n->hiddenLayers[i]->blocks.size() - 1;
+					rBlock(n, i, blockNum);
+					return;
+				}
+				
+			}
+			//log failure 
+			return;
+		}
+		
 		
 	};
 
@@ -312,7 +342,7 @@ public:
 		if (layerNum == 0) { layerNum++; }
 		//lazy fix for output
 		if (layerNum == (n->hiddenLayers.size() - 1)) { layerNum--; }
-		int connNum = rand() & n->hiddenLayers[layerNum]->connections.size();
+		int connNum = rand() & n->hiddenLayers[layerNum]->connections.size() -1;
 
 		
 		//check if random has data flow
@@ -369,10 +399,11 @@ public:
 		{
 			//select random element
 			int layerNum = rand() % (n->hiddenLayers.size());
-			for (int i = 0; i < n->hiddenLayers[i]->blocks.size(); i++) 
+			for (int i = 0; i < n->hiddenLayers[layerNum]->blocks.size(); i++) 
 			{
 				rBlock(n, layerNum, i);
 			}
+			n->hiddenLayers.erase(n->hiddenLayers.begin() + layerNum);
 			
 			
 		}

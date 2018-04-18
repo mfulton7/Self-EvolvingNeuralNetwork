@@ -90,7 +90,7 @@ public:
 			std::getline(in, headers, '\n');
 
 			//1260 IS THE MAX FOR STOCK DATA
-			for (int i = 0; i < 1260; i++) {
+			for (int i = 0; i < 1255; i++) {
 				getline(in, date, ',');
 				std::getline(in, openPrice, ',');
 				std::getline(in, highPrice, ',');
@@ -135,10 +135,10 @@ public:
 	{
 		//equation
 		// y = x^3 + z^2 + 5
-		float inX = rand() % 2000;
-		inX - 1000;
-		float inZ = rand() & 2000;
-		inZ - 1000;
+		float inX = rand() % 10000;
+		inX - 5000;
+		float inZ = rand() & 10000;
+		inZ - 5000;
 
 		float out = (inX * inX * inX) + (inZ * inZ) + 5;
 

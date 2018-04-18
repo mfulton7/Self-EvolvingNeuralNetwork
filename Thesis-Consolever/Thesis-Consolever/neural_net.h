@@ -48,6 +48,7 @@ public:
 	float learningRate = .2;
 
 	float outputRatio = 1.0f;
+	float percentAccuracy = 0.0f;
 
 	//copy constructor
 	Network& operator = (const Network &obj);
@@ -207,9 +208,10 @@ public:
 			
 		}
 
-		float percentAccurcay = 0;
+		
 		totalGuess = totalGuess * outputRatio;
-		percentAccurcay = (totalGuess - totalCorrect) / totalCorrect;
+		percentAccuracy = (totalGuess - totalCorrect) / totalCorrect;
+		percentAccuracy = percentAccuracy * 100;
 		//totalError = 1 - percentAccurcay;
 	
 	};
