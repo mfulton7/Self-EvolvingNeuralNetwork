@@ -8,6 +8,7 @@
 #include<stdlib.h>
 #include<iostream>
 #include<fstream>
+#include<numeric>
 
 #include "neural_net.h"
 #include "data_handlers.h"
@@ -243,7 +244,7 @@ public:
 		selectedNetwork->loadInputs(testDataSet[selectedNetwork->testRef]);
 		selectedNetwork->loadOutputs(testDataSet[selectedNetwork->testRef]);
 		selectedNetwork->completeForwardPass();
-		selectedNetwork->compareResults();
+		selectedNetwork->compareResults(false);
 		selectedNetwork->completeBackwardPass();		
 	};
 
@@ -252,7 +253,16 @@ public:
 		selectedNetwork->loadInputs(testDataSet[selectedNetwork->testRef]);
 		selectedNetwork->loadOutputs(testDataSet[selectedNetwork->testRef]);
 		selectedNetwork->completeForwardPass();
-		selectedNetwork->compareTestResults();
+		//selectedNetwork->compareTestResults();
+		selectedNetwork->compareResults(true);
+	};
+
+	void runRatioPass(Network* selectedNetwork) 
+	{
+		selectedNetwork->loadInputs(testDataSet[selectedNetwork->testRef]);
+		selectedNetwork->loadOutputs(testDataSet[selectedNetwork->testRef]);
+		selectedNetwork->completeForwardPass();
+		selectedNetwork->compareRatioResults();
 	};
 	
 	//return average error and total time to run pass
@@ -268,22 +278,6 @@ public:
 		{
 			t->join();
 			t->~thread();
-		}
-
-		//set output Ratio
-		for each (netBundle* selectedNet in networks)
-		{
-			float totalCorrect = 0;
-			float totalGuess = 0;
-			for (int i = 0; i< selectedNet->neuralNet->correctOutputs.size(); i++)
-			{
-				totalGuess += selectedNet->neuralNet->outputs[i].blocks.front()->unQuashedOutput;
-				//
-				totalCorrect = selectedNet->neuralNet->unCrushedCorrectOutputs[i];
-
-			}
-			float ratio = totalCorrect / totalGuess;
-			selectedNet->neuralNet->outputRatio = ratio;
 		}
 
 	};
@@ -309,6 +303,7 @@ public:
 			generationAverage += abs(selectedNet->neuralNet->totalError);
 		}
 		generationAverage = generationAverage / passesToRun;
+		generationAverage = generationAverage * 100;
 		std::chrono::high_resolution_clock::time_point end = std::chrono::high_resolution_clock::now();
 		auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
 
@@ -365,11 +360,48 @@ public:
 	
 	};
 
-	//todo need to test network for total accuracy
+
+	void setOutputRatios(int batchSize) 
+	{
+		//set output Ratio for each network 
+		for each (netBundle* selectedNet in networks)
+		{
+			
+			vector<float> ratios;
+			//for batchsize number of passes
+			for (int j = 0; j < batchSize; j++) {
+				float totalCorrect = 0;
+				float totalGuess = 0;
+				runRatioPass(selectedNet->neuralNet);
+				selectedNet->neuralNet->testRef++;
+				//for all outputs
+				for (int i = 0; i < selectedNet->neuralNet->correctOutputs.size(); i++)
+				{
+					//totalGuess += selectedNet->neuralNet->outputs[i].blocks.front()->unQuashedOutput;
+					////
+					//totalCorrect += selectedNet->neuralNet->unCrushedCorrectOutputs[i];
+					totalGuess += selectedNet->neuralNet->outputs[i].blocks.front()->totalOutput;
+					//
+					totalCorrect += selectedNet->neuralNet->correctOutputs[i];
+
+				}
+				float ratio = totalCorrect / totalGuess;
+				ratios.push_back(ratio);
+			}
+			float average = std::accumulate(ratios.begin(), ratios.end(), 0.0f) / ratios.size();
+			selectedNet->neuralNet->outputRatio = average;
+		}
+	
+	};
+
+	
 	void testAccuracy(int batchSize) 
 	{
 		//get rid of all versions before testing
 		pruneNetworkVector();
+
+		//setup output ratio
+		setOutputRatios(100);
 		for each (netBundle* selectedNet in networks) 
 		{
 			
@@ -390,14 +422,21 @@ public:
 
 			int passesToRun = batchSize;
 			float generationAverage = 0;
+			vector<float> averages;
 			std::chrono::high_resolution_clock::time_point start = std::chrono::high_resolution_clock::now();
 			for (int i = 0; i < passesToRun; i++)
 			{
 				runTestPass(selectedNet->neuralNet);
 				selectedNet->neuralNet->testRef++;
-				generationAverage += abs(selectedNet->neuralNet->percentAccuracy);
+				//generationAverage += abs(selectedNet->neuralNet->percentAccuracy);
+				averages.push_back(abs(selectedNet->neuralNet->totalError));
+			}
+			for (int j = 0; j < averages.size(); j++) 
+			{
+				generationAverage = generationAverage + averages[j];
 			}
 			generationAverage = generationAverage / passesToRun;
+			generationAverage = generationAverage * 100;
 			std::chrono::high_resolution_clock::time_point end = std::chrono::high_resolution_clock::now();
 			auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
 

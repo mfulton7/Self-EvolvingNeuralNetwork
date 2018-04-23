@@ -161,7 +161,7 @@ public:
 	};
 
 	//compares generated and correct outputs
-	void compareResults() 
+	void compareResults(bool test) 
 	{
 		//clear error list before beginning
 		indErrorList.clear();
@@ -174,9 +174,11 @@ public:
 			float correctResult = correctOutputs[i];
 			float result = correctResult - createdResult;
 			//float result = (correctOutputs[i] - outputs[i].blocks.front()->totalOutput);
-			result = result * result;
-			result = result / 2;
 
+			if (!test) {
+				result = result * result;
+				result = result / 2;
+			}
 			//?? then add the derivative of fast sigmoid (net output)?
 			//not sure if this needs done given our squared error function
 			// derivative of 1/ 1 +x is x +1
@@ -190,6 +192,26 @@ public:
 		
 	};
 
+	void compareRatioResults() 
+	{
+		//clear error list before beginning
+		indErrorList.clear();
+		float totalCorrect = 0;
+		float totalGuess = 0;
+
+		for (int i = 0; i< correctOutputs.size(); i++)
+		{
+			totalGuess += outputs[i].blocks.front()->unQuashedOutput;
+			//
+			totalCorrect = unCrushedCorrectOutputs[i];
+
+		}
+
+
+		//totalGuess = totalGuess * outputRatio;
+		percentAccuracy = (totalGuess - totalCorrect) / totalCorrect;
+		percentAccuracy = percentAccuracy * 100;
+	}
 	
 
 	void compareTestResults() 
@@ -202,9 +224,10 @@ public:
 
 		for (int i = 0; i< correctOutputs.size(); i++)
 		{
-			totalGuess += outputs[i].blocks.front()->unQuashedOutput;
+			totalGuess += outputs[i].blocks.front()->totalOutput;
 			//
 			totalCorrect = unCrushedCorrectOutputs[i];
+			
 			
 		}
 
@@ -312,6 +335,7 @@ public:
 		// 3 - feed forward from hidden layers to output
 		for each(IO_Block* ob in this->outputs->blocks)
 		{
+			
 			ob->sumInputsAndWipeInputVector(false,true);
 		}
 		/*for each(Connection* outputCon in this->outputs->connections)
@@ -329,6 +353,7 @@ public:
 		//if statement to catch all connections that lead to outputs
 		//may want to refactor this check to something more efficient?
 		//for last layer of hidden do different output calc
+		//todo change this for nodes that are connected to output in non back hidden layer
 		if (hlIndex == this->hiddenLayers.size() - 1) {
 			//output back prop uses delta rule
 			//error of this connection is equivalent to
@@ -337,8 +362,9 @@ public:
 			//TODO
 			//warning will need to find way to find correct position in correct outputs
 			//calculate error with respect to c
+			//sigmoid
 			errorC = -(this->correctOutputs.front() - conn->destinationBlock->totalOutput) * (conn->destinationBlock->totalOutput * (1 - conn->destinationBlock->totalOutput)) * conn->originBlock->totalOutput;
-		}
+			}
 		//if destination is not an ioblock then we are dealing with hidden to hidden connection
 		else
 		{
@@ -351,7 +377,16 @@ public:
 			float summationOfErrors = this->summationOfErrorCalculation(conn);
 			float destinationOutput = conn->destinationBlock->totalOutput;
 			float destinationNet = conn->destinationBlock->netInput;
+
+			//this is for sigmoid
 			errorC = summationOfErrors * (destinationOutput * (1 - destinationOutput)) * conn->strengthOfConnection;
+			//this is for relu
+			/*if (conn->destinationBlock->totalOutput == 0 || conn->originBlock->totalOutput == 0) 
+			{
+				errorC = summationOfErrors * (0) *conn->strengthOfConnection;
+			}
+			else { errorC = summationOfErrors * (1) *conn->strengthOfConnection; }*/
+			//
 		}
 		//save error value to connection for use later in backprop calc
 		conn->connectionError = errorC;

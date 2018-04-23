@@ -35,14 +35,14 @@ int main() {
 	testManager.populateTestDataList(50000);
 	std::cout << "Creating network ... " << std::endl;
 	
-	////testManager.spawnStandardNetwork(1, 50);
-	testManager.spawnStandardNetwork(1, 50);
-	testManager.spawnStandardNetwork(1, 10);
+	//testManager.spawnStandardNetwork(1, 50);
+	//testManager.spawnStandardNetwork(1, 25);
+	//testManager.spawnStandardNetwork(1, 10);
 	////testManager.spawnStandardNetwork(2, 50);
-	testManager.spawnStandardNetwork(2, 25);
+	//testManager.spawnStandardNetwork(2, 25);
 	testManager.spawnStandardNetwork(2, 10);
 	////testManager.spawnStandardNetwork(3, 50);
-	testManager.spawnStandardNetwork(3, 25);
+	//testManager.spawnStandardNetwork(3, 25);
 	//testManager.spawnStandardNetwork(3, 10);
 	////testManager.spawnStandardNetwork(4, 50);
 	//testManager.spawnStandardNetwork(4, 25);
@@ -50,9 +50,7 @@ int main() {
 	////testManager.spawnStandardNetwork(5, 50);
 	//testManager.spawnStandardNetwork(5, 25);
 	//testManager.spawnStandardNetwork(5, 10);
-	////testManager.spawnStandardNetwork(6, 50);
-	////testManager.spawnStandardNetwork(6, 25);
-	////testManager.spawnStandardNetwork(6, 10);
+	
 
 
 

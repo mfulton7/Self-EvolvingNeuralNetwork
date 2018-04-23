@@ -111,6 +111,13 @@ public:
 
 	};
 
+	//alternate activaiton function
+	void activateReLU(float summedOutput) 
+	{
+		if (summedOutput < 0) { summedOutput = 0; }
+		totalOutput = summedOutput;
+	};
+
 	//this sums the net input to a block
 	//should be called after all inputs to a block have been sent
 	void sumInputsAndWipeInputVector(bool isInput, bool isOutput)
@@ -165,9 +172,12 @@ public:
 		//{
 		//	totalOutput = outputSum;
 		//}
-
+		
 		//i guess quash even for outputs
+		//if(!isOutput){ activateSigmoid(outputSum); }
+		//else { totalOutput = outputSum; }
 		activateSigmoid(outputSum);
+		//activateReLU(outputSum);
 
 		//wipe
 		this->inputFromConnections.clear();

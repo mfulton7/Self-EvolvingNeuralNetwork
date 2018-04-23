@@ -121,7 +121,7 @@ public:
 		//equation 
 		// y = x^2 +12
 		float in = rand() % 2000;
-		in - 1000;
+		//in - 1000;
 
 		
 		float out = .2 * in + 3;
@@ -135,12 +135,12 @@ public:
 	{
 		//equation
 		// y = x^3 + z^2 + 5
-		float inX = rand() % 10000;
-		inX - 5000;
-		float inZ = rand() & 10000;
-		inZ - 5000;
+		float inX = rand() % 100;
+		//inX - 5000;
+		float inZ = rand() & 100;
+		//inZ - 5000;
 
-		float out = (inX * inX * inX) + (inZ * inZ) + 5;
+		float out = (inX) + (inZ) + 5;
 
 		DataPair<float, float> newPair;
 		newPair.input.push_back(inX);
@@ -157,7 +157,7 @@ public:
 		float inX = rand() % 2000;
 		inX - 1000;
 
-		float out = cos(inX);
+		float out = cos(inX) + 1;
 		DataPair<float, float> newPair;
 		newPair.input.push_back(inX);
 		newPair.output.push_back(out);
